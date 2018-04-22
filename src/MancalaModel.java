@@ -6,14 +6,18 @@ public class MancalaModel {
 	private int counter;
 	private Player player1;
 	private Player player2;
-	private int stonePerPits;
+	private int stonePerPits=0;
 	private boolean isgameOver;
 	private int turnCount;
+	private ArrayList<Pit> Pits;
+
 	
 	
-	public MancalaModel(){
+	public MancalaModel(int numOfStone){
 		
-		
+		stonePerPits = numOfStone;
+		Pits = new ArrayList<Pit>();
+
 	}
 	
 	/**
@@ -26,8 +30,14 @@ public class MancalaModel {
 	/**
 	 * returns true if game is over
 	 * @return
+	 * this function check on if one player of the all pit are empty
 	 */
-	public boolean gameOver(){
+	public boolean IsgameOver(){
+
+
+
+
+	return
 	}
 		
 	/**
@@ -35,6 +45,8 @@ public class MancalaModel {
 	 * @return the winner
 	 */
 	public Player getWinner(){
+
+
 	}
 
 	
