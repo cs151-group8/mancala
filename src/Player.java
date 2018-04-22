@@ -17,7 +17,7 @@ public class Player {
 	public void addStone(){
 		numOfStoneInMancala++;
 	}
-	
+	System.out.println("This is a test");
 	/**
 	 * this method gets the number of stone in each players mancala.
 	 * it will be used to find the winner.
