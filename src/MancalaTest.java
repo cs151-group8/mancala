@@ -9,11 +9,12 @@ public class MancalaTest
      */
     public static void main(String[] args)
     {
-        Mancala model = new Mancala();
-        MancalaView view = new MancalaView();
-        MancalaController controller = new MancalaController(model, view);
 
-        model.addObserver(view);
+//        Mancala model = new Mancala();
+        MancalaView view = new MancalaView();
+//        MancalaController controller = new MancalaController(model, view);
+//
+//        model.addObserver(view);
     }
 
 }
