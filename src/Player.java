@@ -4,9 +4,16 @@ public class Player {
 	
 	public int numOfStoneInMancala;
 	public int numOfUndos;
+	public String name; //Player 1, Player 2
 	
-	public Player(){
-		
+	/**
+	 * Constructs the Player's Class
+	 * @param n
+	 */
+	public Player(String n){
+		name = n;
+		numOfUndos=0;
+		numOfStoneInMancala=0;
 	}
 	
 	
@@ -36,6 +43,14 @@ public class Player {
 	
 	public int getnumOfUndos(){
 		return numOfUndos;
+	}
+	
+	/**
+	 * Returns the name of the player
+	 * @return the name of the player. eg. Player 1 or Player 2
+	 */
+	public String getName(){
+		return name;
 	}
 	
 }
