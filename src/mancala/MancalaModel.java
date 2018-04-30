@@ -4,52 +4,83 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
+ *
  * @author Aye Swe
+ *
  */
 
 public class MancalaModel {
 
-    private int StoneInHand = 0;// record the stone in hand of the player in current
-    private ArrayList<Pit> board = new ArrayList<Pit>();// representation of a macala board with Pit objs
+    private int StoneInHand = 0;// record the stone in hand of the player in
+    // current
+    private ArrayList<Pit> board = new ArrayList<Pit>();// representation of a
+    // macala board with Pit
+    // objs
     private Player player1 = null;
     private Player player2 = null;
-    private final int NUMBER_OF_STONE_PER_PIT = 3;
-    private ArrayList<Pit> copyOfBoardBeforeAPlayer = null;
-    private String getPlayerName = null;
+    private int StonePerPit = 0;
+    private ArrayList<Pit> copyOfBoardForUndo = null;
+    private boolean freeTurn = false;
+    private ArrayList<Pit> player1Pits = null;
+    ArrayList<Pit> player2Pits = null;
 
-
-    public MancalaModel(String name, int pit) {
-        player1 = new Player("Player1", 7);// object of player with their desinated Macala
-        player2 = new Player("Player2", 13);// object of player with their desinated Macala
-        copyOfBoardBeforeAPlayer = new ArrayList<Pit>();// a copy of board to tract at least last step of the board
-        populateBoard(board, NUMBER_OF_STONE_PER_PIT);// fill the board with object of pit and stone inside
-        copyTheBoard(copyOfBoardBeforeAPlayer, board);//This array copy the original board
-        Pit selectedPit = selectPit(pit);// This is just testing this should come from the view user input( Rember array start from 0 so, pit # 1 in array is pit # 2)
-        getPlayerName = name;
-
-        moveGame(selectedPit, CheckWhichPlayer(getPlayerName));
-        //Pit selectedPit = selectPit(5);// This is just testing this should come from the view user input( Rember array start from 0 so, pit # 1 in array is pit # 2)
+    public MancalaModel() {
 
     }
 
+    public MancalaModel(int Stone) {
+        StonePerPit = Stone;
+        player1 = new Player("Player1", 6);// object of player with their
+        // desinated Macala
+        player2 = new Player("Player2", 13);// object of player with their
+        // desinated Macala
+        copyOfBoardForUndo = new ArrayList<Pit>();// a copy of board to tract at
+        // least last step of the
+        // board
+        populateBoard(board, StonePerPit);// fill the board with object of pit
+        // and stone inside
+        player1Pits = new ArrayList<Pit>(board.subList(0, 6));
+        player2Pits = new ArrayList<Pit>(board.subList(7, 13));
+
+        copyTheBoard(copyOfBoardForUndo, board);// This array copy the original
+        // board
+
+    }
+
+    public void getPlayer1Mancala() {
+
+        System.out.println("player1 Mancala is: " + player1.getMancala());
+
+    }
+
+    public void getPlayer2Mancala() {
+
+        System.out.println("player2 Manacala is: " + player2.getMancala());
+    }
+
+    public ArrayList<Pit> getBoard() {
+
+        return board;
+    }
+
+
     public Player CheckWhichPlayer(String players) {
 
-
         if (players.equalsIgnoreCase("player1")) {
-            System.out.println("I am player 1");
+
             return player1;
 
         }
         if (players.equalsIgnoreCase("player2")) {
-            System.out.println("I am player 2");
+
             return player2;
         }
         return null;
     }
 
-
     /*
      * This function will copy the original board before the game start
+     * just to use as initial game
      * @para Pit board
      */
     public void copyTheBoard(ArrayList<Pit> copy, ArrayList<Pit> original) {
@@ -67,6 +98,28 @@ public class MancalaModel {
             }
             copy.add(new Pit(original.get(i).getNumbOfStone()));
         }
+    }
+
+    /**
+     * This method will keep overiding the temp board that is saved for the undo functions
+     * @param copy
+     * @param original
+     */
+    public void OverideTheTempBoard(ArrayList<Pit> copy, ArrayList<Pit> original) {
+        for (int i = 0; i < 14; i++) {
+            if (i == 6) {
+                copy.set(i, (new Pit(original.get(i).getNumbOfStone())));
+                i++;
+
+            }
+            if (i == 13) {
+                copy.set(i, (new Pit(original.get(i).getNumbOfStone())));
+
+                break;
+            }
+            copy.set(i, (new Pit(original.get(i).getNumbOfStone())));
+        }
+
     }
 
     /**
@@ -92,7 +145,8 @@ public class MancalaModel {
     }
 
     /**
-     * This function test the # of stones in the pit, after using move the game function
+     * This function test the # of stones in the pit, after using move the game
+     * function
      *
      * @param
      */
@@ -104,12 +158,14 @@ public class MancalaModel {
     }
 
     /**
-     * This function will print the copy of board for state tracking
+     * Print with parameter
+     *
      */
-    public void printCopyOfBoard() {
-        for (Pit p : copyOfBoardBeforeAPlayer)
-            System.out.print("[" + copyOfBoardBeforeAPlayer.indexOf(p) + "] " + p.getNumbOfStone() + " -->");
 
+    public void printBoard(ArrayList<Pit> array) {
+
+        for (Pit p : array)
+            System.out.print("[" + array.indexOf(p) + "] " + p.getNumbOfStone() + " -->");
 
     }
 
@@ -126,7 +182,8 @@ public class MancalaModel {
     }
 
     /**
-     * This function will select the desire pit from the player, will substitute with Action Listner from user input
+     * This function will select the desire pit from the player, will substitute
+     * with Action Listner from user input
      *
      * @param index
      * @return
@@ -159,74 +216,126 @@ public class MancalaModel {
      * @return
      */
 
-
     public int getOtherPlayerMacala(Player player) {
         String name = player.getName();
         int otherPlayerMacala = 0;
         if (name == "Player1") {
             return otherPlayerMacala = player2.getMancala();
-        } else
+        }
+
+        else
             return otherPlayerMacala = player1.getMancala();
 
     }
 
+
     /**
-     * This function will loop the arraylist until no more stone in hand or move function
+     * This function will loop the arraylist until no more stone in hand or move
+     * function
      *
      * @param pit
      * @param player
      */
 
-    public void moveGame(Pit pit, Player player) {// assume pit is the right pit for the player , program will not check its player's pit
+    public void moveGame(Pit pit, Player player) {// assume pit is the right pit
 
-        int otherMacala = getOtherPlayerMacala(player);// get the other opponent's Macala not to drop the stone
-        StoneInHand = pit.getNumbOfStone();//grap the stone from the pit
-        pit.setNumbOfStone(0);//empty the pit
-        boolean freeTurn = false;//set the free turn for the player
+        int peakNextPit = 0; // back to the beginning of the Array
+        int otherMacala = getOtherPlayerMacala(player);// get the other
+        // opponent's Macala not
+        // to drop the stone
+        StoneInHand = pit.getNumbOfStone();// grap the stone from the pit
+        pit.setNumbOfStone(0);// empty the pit
         int CurrentIndex = board.indexOf(pit);
-        int StartIndex = CurrentIndex;// this will replaced in the loop to go back to the beginning of the Array index
+        int StartIndex = CurrentIndex;// this will replaced in the loop to go
+        // back to the beginning of the Array
+        // index
         int loopCount = StartIndex + 1;
 
-        while (StoneInHand != 0 && loopCount < board.size()) {// if there is no stone in the
+        while (StoneInHand != 0 && loopCount < board.size()) {// if there is no
+            // stone in the
 
             // check if loopCount is other player's Macalar
             if (loopCount == otherMacala) {// otherMacala can be 7 or 13
                 // check if the last index of array
                 if (loopCount == board.size() - 1) {
-                    loopCount = 0; // reset the loopCount to the beginning of the array, notice at the end of the while there is +1 added
+                    loopCount = 0; // reset the loopCount to the beginning of
+                    // the array, notice at the end of the while
+                    // there is +1 added
                 }
-                loopCount = loopCount + 1;// if it is pass that index, if not drop the stone in the Macala
+                loopCount = loopCount + 1;// if it is pass that index, if not
+                // drop the stone in the Macala
 
             }
 
             if (loopCount == player.getMancala()) {// player1 Macalar
                 player.addStoneToMancala();
-                Pit currentPit = board.get(loopCount);// get current pit's obj in this index
+                Pit currentPit = board.get(loopCount);// get current pit's obj
+                // in this index
 
             }
+            StoneInHand = StoneInHand - 1;
+            peakNextPit = loopCount + 1;
+       //     System.out.println("player.getMancala is : " + player.getMancala());
+            setLastStonePit(peakNextPit, StoneInHand, player.getMancala());// this
+            // will
+            // keep
+            // track
+            // of
+            // last
+            // stone
 
-            // check  if the last stone is drop to the empty pit or the current player's pit, player can take the opponent's opposite direction pit's all stone
-
-            if (StoneInHand == 1 & loopCount == player.getMancala()) {// if the last stone is last one in the hand check if the next pit is player's Macala
-
-                freeTurn = true; //set free turn flag
-            }
-
-            // add one more stone in the current pit
-
-            Pit currentPit = board.get(loopCount);// get current pit's obj in this index
+            Pit currentPit = board.get(loopCount);// get current pit's obj in
+            // this index
             currentPit.addAStone();// add a stone to the pit
 
             // check if the last index of array
             if (loopCount == board.size() - 1) {
-                System.out.println("This is end of the array");
-                loopCount = -1; // reset the loopCount to the beginning of the array, notice at the end of the while there is +1 added
+                // System.out.println("This is end of the array");
+                loopCount = -1; // reset the loopCount to the beginning of the
+                // array, notice at the end of the while there
+                // is +1 added
             }
-            StoneInHand = StoneInHand - 1;
+
             loopCount = loopCount + 1;
 
         }
 
     }
 
-}
+    public void setLastStonePit(int peakNextPit, int Stone, int mancala) {
+
+        //System.out.println("In the setLastStonePint function: ");
+       // System.out.println("Stone is: " + Stone);
+        //System.out.println("peakNextPit: " + peakNextPit);
+        //System.out.println("mancala is : " + mancala);
+
+        if (Stone == 1 & peakNextPit == mancala) {// if the last stone is last
+            // one in the hand check if
+            // the next pit is player's
+            // Macala
+
+            freeTurn = true;
+        }
+
+
+    }
+
+    public void reSetFreeTurnStatus() {
+
+        freeTurn = false;
+    }
+
+    public boolean getFreeTurnStatus() {
+
+        return freeTurn;
+    }
+
+    public ArrayList<Pit> getPlayer1Pits() {
+        return player1Pits;
+    }
+
+    public ArrayList<Pit> getPlayer2Pits() {
+        return player2Pits;
+    }
+
+}// class done

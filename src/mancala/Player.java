@@ -1,13 +1,12 @@
 package mancala;
-
 import java.util.ArrayList;
+import java.util.List;
 
 public class Player {
 
     public int numOfStoneInMancala;
     public int numOfUndos;
-    public String name; //Player 1, Player 2
-    private ArrayList<Pit> playerPits;
+    public String name; // Player 1, Player 2
     private int Mancala = 0;// will keep the index of the player's Mancala
 
     /**
@@ -19,19 +18,18 @@ public class Player {
         name = n;
         numOfUndos = 0;
         numOfStoneInMancala = 0;
-        playerPits = new ArrayList<Pit>();// this will find if a particular pit is belong to which player
         Mancala = mancala;
-    }
 
+    }
 
     /**
      * This method return the Mancala index of the player
+     *
      */
     public int getMancala() {
 
         return Mancala;
     }
-
 
     /**
      * this increases the number of stone in a player's mancala by one.
@@ -43,17 +41,18 @@ public class Player {
     }
 
     /**
-     * this method gets the number of stone in each players mancala.
-     * it will be used to find the winner.
+     * this method gets the number of stone in each players mancala. it will be
+     * used to find the winner.
      *
      * @return the number of stone in the mancala
      */
-    public int getNumOfStones() {
+    public int getNumOfStonesInMancala() {
         return numOfStoneInMancala;
     }
 
     /**
-     * Counts number of undos a player has made. (can have up to three for each move)
+     * Counts number of undos a player has made. (can have up to three for each
+     * move)
      */
     public void addUndo() {
         numOfUndos++;
