@@ -138,10 +138,6 @@ public class MancalaModel {
 		freeTurn();
 		// players 1 turn
 		if (getsWhoTurn() == 0 && getsPlayerTurn()== player1) {
-			if (freeTurn) {
-				turnCount = turnCount + 1; // gets free turn
-			}
-
 			// if stone lands in an empty pit, it will get all the opponents
 			// stone on opposite side
 			if (lastStonePos >= 0 && lastStonePos <= 5 && board.get(lastStonePos).getNumbOfStones() == 1) {
@@ -152,10 +148,6 @@ public class MancalaModel {
 
 		// players2 turn
 		if (getsWhoTurn() == 1 && getsPlayerTurn()== player2) {
-			if (freeTurn) {
-				turnCount = turnCount + 1; // gets free turn
-			}
-
 			// if stone lands in an empty pit, it will get all the opponents
 			// stone on opposite side
 			if (lastStonePos >= 7 && lastStonePos <= 12 && board.get(lastStonePos).getNumbOfStones() == 1) {
@@ -164,13 +156,13 @@ public class MancalaModel {
 			}
 		}
 
+		if (freeTurn) {
+			turnCount = turnCount + 1; // gets free turn
+		}
 		
 		turnCount++;
-		printBoard(player1Pits);
-		printBoard(player2Pits);
 		
-		System.out.println(gameOver());
-		System.out.println(turnCount);
+		System.out.println("turn count:" +turnCount);
 		
 		player1Pits = new ArrayList<Pit>(board.subList(0, 6));
 		player2Pits = new ArrayList<Pit>(board.subList(7, 13));
@@ -192,6 +184,11 @@ public class MancalaModel {
 			freeTurn = false;
 		}
 	}
+	
+	
+	public boolean getFreeTurn(){
+		return freeTurn;
+	}
 
 	public void undo(Player p) {
 		if (p.numOfUndos < 3 && copyOfBoard != null) {
@@ -203,9 +200,7 @@ public class MancalaModel {
 				resetFreeTurnStatus();
 			}
 			
-			System.out.println(turnCount+ "/n");
-			
-			System.out.println(p.getName()+ p.numOfUndos);
+			System.out.println("Player Name: " + p.getName()+" Num Of Undos " + p.numOfUndos);
 
 			ChangeEvent event = new ChangeEvent(this);
 			for (ChangeListener l : listeners)

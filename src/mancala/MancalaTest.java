@@ -216,9 +216,13 @@ public class MancalaTest {
 		undoButton.addActionListener(
 					new ActionListener() {
 					  public void actionPerformed(ActionEvent e) {
+						if(!model.getFreeTurn()){
 						Player p = model.getOtherPlayers();
-					    model.undo(p);	
-					    System.out.print(model.getsPlayerTurn().getName());
+					    model.undo(p);}
+						else{
+						Player p = model.getsPlayerTurn();
+						model.undo(p);
+						}
 					  }		
 				    });
 		
