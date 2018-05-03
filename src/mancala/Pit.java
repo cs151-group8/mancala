@@ -1,26 +1,29 @@
-package mancala;
 
 
 public class Pit {
 
-    private int numbOfStone = 0;
+    private int numberOfStone = 0;
 
     public Pit(int numberOfStone) {
 
-        this.numbOfStone = numberOfStone;
+        this.numberOfStone = numberOfStone;
     }
 
-    public int getNumbOfStone() {
-        return numbOfStone;
+    public int getNumbOfStones() {
+        return numberOfStone;
     }
 
-    public void setNumbOfStone(int numbOfStone) {
-        this.numbOfStone = numbOfStone;
+    public void setNumbOfStone(int n) {
+        this.numberOfStone = n;
     }
 
     public void addAStone() {
 
-        numbOfStone = numbOfStone + 1;
+        numberOfStone = numberOfStone + 1;
+    }
+    
+    public void addMoreStones(int n){
+    	numberOfStone = numberOfStone + n;
     }
 
 }

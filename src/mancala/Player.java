@@ -1,4 +1,4 @@
-package mancala;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +60,10 @@ public class Player {
 
     public int getnumOfUndos() {
         return numOfUndos;
+    }
+    
+    public void setnumOfUndos(int n){
+    	numOfUndos = n;
     }
 
     /**

@@ -1,3 +1,5 @@
+
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,14 +26,22 @@ import javax.swing.event.ChangeListener;
 
 public class MancalaTest {
 	
-	private static MancalaModel model;
 	private static ArrayList<JButton> pits = new ArrayList<JButton>();
+	private static MancalaModel model;
 	private static JFrame mainMenu;
 	private static JFrame boardFrame;
 	private static JLabel title;
-	 private ArrayList<Pit> board = new ArrayList<Pit>();
-	 private static ArrayList<Pit> tempBoard = new ArrayList<Pit>();
-
+	private static JLabel whosTurn;
+	private static ArrayList<Pit> board = new ArrayList<Pit>();
+	private static JPanel pitPanel1 = new JPanel();
+	private static JPanel pitPanel2 = new JPanel();
+	private static JPanel centerPanel= new JPanel();
+	private static JButton player1Score;
+	private static JButton player2Score;
+	private static JLabel undoCount;
+	private static ArrayList<Pit> copyOfBoard = new ArrayList<Pit>();
+	private static JButton undoButton;
+	
 	public static void main(String args[]){
 		mainMenu();
 	}
@@ -63,8 +73,8 @@ public class MancalaTest {
 		
 		threeStones.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				MancalaModel mm = new MancalaModel(3);
-				mm.copyTheBoard(tempBoard, mm.getBoard());
+				model = new MancalaModel(3);
+				model.populateBoard(board, 3);
 				if (e.getSource() == threeStones) {
 			        threeStones.setEnabled(false);
 				    fourStones.setEnabled(true);
@@ -74,8 +84,8 @@ public class MancalaTest {
 		
 		fourStones.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				MancalaModel mm = new MancalaModel(4);
-				mm.copyTheBoard(tempBoard, mm.getBoard());
+				model = new MancalaModel(4);
+				model.populateBoard(board, 4);
 				if (e.getSource() == fourStones) {
 			        fourStones.setEnabled(false);
 				    threeStones.setEnabled(true);
@@ -96,7 +106,7 @@ public class MancalaTest {
 		
 		playerone.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				//add function
+					model.whoGoesFirst(0);
 				
 				if (e.getSource() == playerone) {
 			        playerone.setEnabled(false);
@@ -107,7 +117,7 @@ public class MancalaTest {
 		
 		playertwo.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				//add function
+					model.whoGoesFirst(1);
 				
 				if (e.getSource() == playertwo) {
 			        playertwo.setEnabled(false);
@@ -193,71 +203,44 @@ public class MancalaTest {
 	 */
 	public static void startGame(){
 		boardFrame = new JFrame();
-		boardFrame.setSize(600, 300);
+		boardFrame.setSize(700, 400);
 		boardFrame.setLayout(new BorderLayout());
 		
+		getTurn();
+		
 		JPanel undoPanel = new JPanel();
-		JButton undoButton = new JButton("Undo");
+		undoButton = new JButton("Undo");
 		undoPanel.add(undoButton);
+		undoPanel.add(undoCount);
 		 
 		undoButton.addActionListener(
 					new ActionListener() {
 					  public void actionPerformed(ActionEvent e) {
-					    //model.undo();				
+						Player p = model.getOtherPlayers();
+					    model.undo(p);	
+					    System.out.print(model.getsPlayerTurn().getName());
 					  }		
 				    });
 		
 		
-		//CENTER PANEL
-		JPanel centerPanel = new JPanel();
 		centerPanel.setLayout(new GridLayout(6, 0));
 		
-		JPanel pitPanel1 = new JPanel();
-		//players 1 pits
-		
-		for(int i=0; i<6 ;i++){
-			JButton pit = new JButton(""+tempBoard.get(i).getNumbOfStone());
-			pit.setBackground(Color.WHITE);
-			pitPanel1.add(pit);
-			
-			pit.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					
-				}
-				
-			});
-			pits.add(pit);
-		}
-		
-		JPanel pitPanel2 = new JPanel();
-		//players 2 pits
-		
-		for(int i=7; i<13 ;i++){
-			JButton pit = new JButton(""+tempBoard.get(i).getNumbOfStone());
-			pit.setBackground(Color.WHITE);
-			pitPanel2.add(pit);
-			
-			pit.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					
-				}
-				
-			});
-			pits.add(pit);
-		}
+		updateBoard();
+	
 		
 		centerPanel.add(pitPanel2);
 		centerPanel.add(pitPanel1);
 		
-		
-		
+		getScore();
 		
 		//left panel
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new GridLayout(0,1));
 		JLabel player2Mancala = new JLabel("Player 2's Pit");
 		player2Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
-		JButton player2Score = new JButton("");
+		
+		
+		
 		leftPanel.add(player2Mancala);
 		leftPanel.add(player2Score);
 		
@@ -267,15 +250,48 @@ public class MancalaTest {
 		rightPanel.setLayout(new GridLayout(0,1));
 		JLabel player1Mancala = new JLabel("Player 1's Pit");
 		player1Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
-		JButton player1Score = new JButton("");
+		
+		
+		
 		rightPanel.add(player1Mancala);
 		rightPanel.add(player1Score);
 		
 		//top panel
 		JPanel topPanel = new JPanel();
-		JLabel gameTitle = new JLabel("MANCALA");
+		topPanel.setLayout(new GridLayout(0,1));
+		JLabel gameTitle = new JLabel("MANCALA", JLabel.CENTER);
 		gameTitle.setFont(new Font("Serif", Font.PLAIN, 30));
 		topPanel.add(gameTitle);
+		topPanel.add(whosTurn);		
+		
+		
+		model.attach(new ChangeListener()
+        {
+            public void stateChanged(ChangeEvent e)
+            {
+            	
+            		board= model.getBoard();
+            		topPanel.remove(whosTurn);
+            		leftPanel.remove(player2Score);
+            		rightPanel.remove(player1Score);
+            		undoPanel.remove(undoCount);
+                	centerPanel.removeAll();
+                	pits.clear();
+                	pitPanel1.removeAll();
+                	pitPanel2.removeAll();
+                	updateBoard();
+                	getTurn();
+                	getScore();
+                	centerPanel.add(pitPanel2);
+                	centerPanel.add(pitPanel1);
+                	topPanel.add(whosTurn);
+                	leftPanel.add(player2Score);
+            		rightPanel.add(player1Score);
+            		undoPanel.add(undoCount);
+                	boardFrame.revalidate();
+            	
+            }
+        });
 		
 		
 		boardFrame.add(undoPanel, BorderLayout.SOUTH);
@@ -290,4 +306,67 @@ public class MancalaTest {
         boardFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}
+	
+	public static void updateBoard(){
+		int t = model.getsWhoTurn();
+		for(int i=0; i<6 ;i++){
+			JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
+			pit.setBackground(Color.WHITE);
+			pitPanel1.add(pit);
+			final int selectedPit = i;
+			if(t==1){
+				pit.setEnabled(false);
+			}
+			pit.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					Player p = model.getsPlayerTurn();
+					model.move(selectedPit, p);
+					
+				}
+				
+			});
+			pits.add(pit);
+		}
+		
+		for(int i= 12; i>=7 ;i--){
+			JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
+			pit.setBackground(Color.WHITE);
+			pitPanel2.add(pit);
+			final int selectedPit = i;
+			if(t==0){
+				pit.setEnabled(false);
+			}
+			
+			pit.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					Player p = model.getsPlayerTurn();
+					model.move(selectedPit, p);
+					
+				}
+				
+			});
+			pits.add(pit);
+		}
+		
+		
+	}
+	
+	
+	public static void getTurn(){
+		Player p = model.getsPlayerTurn();
+		whosTurn = new JLabel(p.getName()+ "'s Turn", JLabel.CENTER);
+		undoCount = new JLabel(p.getName() + "'s Undo Count:"  + p.getnumOfUndos());
+	}
+	
+	public static void getScore(){
+		player1Score = new JButton(""+board.get(6).getNumbOfStones());
+		player1Score.setBackground(Color.WHITE);
+		player1Score.setEnabled(false);
+		
+		player2Score = new JButton(""+board.get(13).getNumbOfStones());
+		player2Score.setBackground(Color.WHITE);
+		player2Score.setEnabled(false);
+	}
+	
+	
 }
