@@ -4,11 +4,12 @@ import java.util.ArrayList;
 
 public class MancalaView {
     private MancalaModel model;
+    private ArrayList<JLayeredPane> pitPanes = new ArrayList<>();
 
     //todo: These should be defined by and retrieved from the model
-    private int pitsPerRow = 6;  //pits in a row, NOT counting mancala
-    private int pitRows = 2;         //some variants have more than 2 rows, but only 2 rows supported at this time
-    private int pitTotalCount = pitsPerRow * pitRows + 2;
+    private static final int PITS_PER_ROW = 6;  //pits in a row, NOT counting mancala
+    private static final int PIT_ROWS = 2;         //some variants have more than 2 rows, but only 2 rows supported at this time
+    private static final int PIT_TOTAL_COUNT = PITS_PER_ROW * PIT_ROWS + 2;
 
     public void setModel(MancalaModel model) {
         this.model = model;
@@ -51,6 +52,7 @@ public class MancalaView {
         gameFrameGBC.weighty = 1.0;
         gameFrameGBC.gridy += 1;
         gameFrameGBC.insets = new Insets(0,0,0,0);  // Reset insets
+
         JPanel gamePanel = new JPanel(new GridBagLayout());
         gameFrame.add(gamePanel, gameFrameGBC);
 
@@ -61,30 +63,40 @@ public class MancalaView {
         gbc.insets = new Insets(5, 5, 5, 5);
 
         // For each pit, including mancala
-        for (int i = 0; i < pitTotalCount; i++){
+        for (int i = 0; i < PIT_TOTAL_COUNT; i++){
             //Determine the pit's position in the grid (# 6 and 13 are double height, taking up 2 rows)
-            // 13 12 11 10 9  8  7  6    <-- columns go from 0 to 7 (that is, from pitsPerRow+1 to 0)
-            //    0  1  2  3  4  5       <-- pitsPerRow = 6
-//            gbc.gridy = (i < pitsPerRow) ? 1 : 0;  //Only pits 0-5 are in the bottom row, else top row
-//            gbc.gridx = (i <= pitsPerRow) ? i + 1 : (pitTotalCount / 2) - i + pitsPerRow;  //7-1, 7-2...
+            // 13 12 11 10 9  8  7  6    <-- columns go from 0 to 7 (that is, from PITS_PER_ROW+1 to 0)
+            //    0  1  2  3  4  5       <-- PITS_PER_ROW = 6
+//            gbc.gridy = (i < PITS_PER_ROW) ? 1 : 0;  //Only pits 0-5 are in the bottom row, else top row
+//            gbc.gridx = (i <= PITS_PER_ROW) ? i + 1 : (PIT_TOTAL_COUNT / 2) - i + PITS_PER_ROW;  //7-1, 7-2...
             gbc.gridy = pitToPoint(i).y;
             gbc.gridx = pitToPoint(i).x;
             gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
 
-            //Add a button to the current pit
+            //Create a button for the current pit
             //JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
             String side = (i <= 6) ? "A" : "B";
             int num = (i <= 6) ? i + 1 : i - 6;
-            RoundedButton pit = new RoundedButton(side + ((i == 6 || i == 13) ? "" : num ));
-            pit.setBackground(Color.WHITE);
+            RoundedButton pitButton = new RoundedButton(side + ((i == 6 || i == 13) ? "" : num ));
+            pitButton.setBackground(Color.WHITE);
             // Disable pits belonging to other player
             final int selectedPit = i;
             //if(t==1){pit.setEnabled(false);}
-            pit.addActionListener(e -> {
+            pitButton.addActionListener(e -> {
                 Player p = model.getsPlayerTurn();
                 model.move(selectedPit, p);
             });
-            gamePanel.add(pit, gbc);
+
+            JLayeredPane pitPane = new JLayeredPane();
+            pitPane.setLayout(new GridBagLayout());
+            GridBagConstraints pitPaneGBC = new GridBagConstraints();
+            pitPaneGBC.fill = GridBagConstraints.BOTH;
+            pitPaneGBC.weightx = .5;
+            pitPaneGBC.weighty = .5;
+            pitPane.add(pitButton, pitPaneGBC, 0);
+            pitPane.add(new JLabel(new PitIcon(10, 10, new Color(0xF5, 0xF5, 0xDC), new Color(0xF5, 0xF5, 0xDC))), 1);
+            gamePanel.add(pitPane, gbc);
+            pitPanes.add(i, pitPane);  // Keep track of the JLayeredPanes for updating
             //pits.add(pit);  //Add button to ArrayList
         }
 
@@ -146,16 +158,19 @@ public class MancalaView {
      */
     private Point pitToPoint(int pit){
         return new Point(
-            pit <= pitsPerRow ? pit + 1 : (pitTotalCount / 2) - pit + pitsPerRow,  // y coordinate
-                pit < pitsPerRow  ? 1 : 0   // x coordinate
+            pit <= PITS_PER_ROW ? pit + 1 : (PIT_TOTAL_COUNT / 2) - pit + PITS_PER_ROW,  // y coordinate
+                pit < PITS_PER_ROW ? 1 : 0   // x coordinate
         );
     }
 
-    private void drawStonesInPits(ArrayList<Pit> pits) {
-        for (int p = 0; p < pitTotalCount; p++) {  // For each pit on the game board
+    public void drawStones(ArrayList<Pit> pits) {
+        for (int p = 0; p < PIT_TOTAL_COUNT; p++) {  // For each pit on the game board
             Pit pit = pits.get(p);  // Get pit object
-            pit.getNumbOfStones();  // Get # of stones in this pit
-
+            int stoneCount = pit.getNumbOfStones();  // Get # of stones in this pit
+            JLayeredPane pitPane = pitPanes.get(p);
+            for (int i = 0; i < stoneCount; i++) {
+                pitPane.add(new JLabel(new PitIcon(10, 10, new Color(0xF5, 0xF5, 0xDC), new Color(0xF5, 0xF5, 0xDC))));
+            }
 
         }
     }
@@ -168,7 +183,7 @@ public class MancalaView {
      */
     public void update(MancalaModel model) {
         ArrayList<Pit> pits = model.getBoard();
-
+        drawStones(pits);
     }
 }
 
