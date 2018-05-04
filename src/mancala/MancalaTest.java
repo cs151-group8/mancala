@@ -1,10 +1,6 @@
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -17,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import static java.awt.GridBagConstraints.BOTH;
 
 
 public class MancalaTest {
@@ -226,8 +224,7 @@ public class MancalaTest {
 		centerPanel.setLayout(new GridLayout(6, 0));
 		
 		updateBoard();
-	
-		
+
 		centerPanel.add(pitPanel2);
 		centerPanel.add(pitPanel1);
 		
@@ -313,44 +310,115 @@ public class MancalaTest {
 	
 	public static void updateBoard(){
 		int t = model.getsWhoTurn();
-		for(int i=0; i<6 ;i++){
+
+		pitPanel1.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.weightx = .5;
+		gbc.weighty = .5;
+
+		// For each pit, including mancala
+		int pitTotalCount = 14;  //including mancala.  Pit 0 = pit A1, moves CCW
+		int pitCountPerRow = (pitTotalCount - 2) / 2;  // = 6 pits in a row, NOT counting mancala
+		for (int i = 0; i < pitTotalCount; i++){
+			//Determine the pit's position in the grid (# 6 and 13 are double height, taking up 2 rows)
+			// 13 12 11 10 9  8  7  6    <-- columns go from 0 to 7 (that is, from pitCountPerRow+1 to 0)
+			//    0  1  2  3  4  5       <-- pitCountPerRow = 6
+			gbc.gridy = (i < pitCountPerRow) ? 1 : 0;  //Only pits 0-5 are in the bottom row, else top row
+			gbc.gridx = (i <= pitCountPerRow) ? i + 1 : (pitTotalCount / 2) - i + pitCountPerRow;  //7-1, 7-2...
+			gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
+
+			//Add a button to the current pit
 			JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
 			pit.setBackground(Color.WHITE);
-			pitPanel1.add(pit);
 			final int selectedPit = i;
 			if(t==1){
 				pit.setEnabled(false);
 			}
-			pit.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					Player p = model.getsPlayerTurn();
-					model.move(selectedPit, p);
-					
-				}
-				
-			});
+			pit.addActionListener(e -> {
+                Player p = model.getsPlayerTurn();
+                model.move(selectedPit, p);
+            });
+			pitPanel1.add(pit, gbc);
 			pits.add(pit);
+
 		}
-		
-		for(int i= 12; i>=7 ;i--){
-			JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
-			pit.setBackground(Color.WHITE);
-			pitPanel2.add(pit);
-			final int selectedPit = i;
-			if(t==0){
-				pit.setEnabled(false);
-			}
-			
-			pit.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					Player p = model.getsPlayerTurn();
-					model.move(selectedPit, p);
-					
-				}
-				
-			});
-			pits.add(pit);
-		}
+
+//		// For each pit in the playable rows
+//		int pitsPerRow = 6;  // = 6 pits in a row, NOT counting mancala
+//		int pitRows = 2;
+//		int pitCount = pitsPerRow * pitRows;
+//		for (int i = 0; i < pitCount; i++){
+//			JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
+//			pit.setBackground(Color.WHITE);
+//			//Determine the pit's position in the grid
+//			gbc.gridy = (i < pitsPerRow) ? 1 : 0;  //Only pits 0-5 are in the bottom row, else top row
+//			gbc.gridx = (i < pitsPerRow) ? i : pitCount - i - 1;
+//			pitPanel1.add(pit, gbc);
+//
+//			final int selectedPit = i;
+//			if(t==1){
+//				pit.setEnabled(false);
+//			}
+//			pit.addActionListener(new ActionListener(){
+//				public void actionPerformed(ActionEvent e){
+//					Player p = model.getsPlayerTurn();
+//					model.move(selectedPit, p);
+//
+//				}
+//
+//			});
+//			pits.add(pit);
+//
+//		}
+
+
+
+//		pitPanel1.setLayout(new GridBagLayout());
+//		GridBagConstraints gbc = new GridBagConstraints();
+//		gbc.fill = GridBagConstraints.BOTH;
+//		gbc.weightx = .5;
+//		gbc.weighty = .5;
+//		for(int i=0; i<6 ;i++){
+//			JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
+//			pit.setBackground(Color.WHITE);
+//			gbc.gridx = i;
+//			pitPanel1.add(pit, gbc);
+//			final int selectedPit = i;
+//			if(t==1){
+//				pit.setEnabled(false);
+//			}
+//			pit.addActionListener(new ActionListener(){
+//				public void actionPerformed(ActionEvent e){
+//					Player p = model.getsPlayerTurn();
+//					model.move(selectedPit, p);
+//
+//				}
+//
+//			});
+//			pits.add(pit);
+//		}
+//		pitPanel2.setLayout(new GridBagLayout());
+//		for(int i= 12; i>=7 ;i--){
+//			gbc.gridx = i;
+//			JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
+//			pit.setBackground(Color.WHITE);
+//			pitPanel2.add(pit, gbc);
+//			final int selectedPit = i;
+//			if(t==0){
+//				pit.setEnabled(false);
+//			}
+//
+//			pit.addActionListener(new ActionListener(){
+//				public void actionPerformed(ActionEvent e){
+//					Player p = model.getsPlayerTurn();
+//					model.move(selectedPit, p);
+//
+//				}
+//
+//			});
+//			pits.add(pit);
+//		}
 		
 		
 	}
