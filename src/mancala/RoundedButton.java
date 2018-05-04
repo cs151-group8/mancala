@@ -4,12 +4,13 @@
  * http://docs.oracle.com/javase/1.4.2/docs/guide/awt/demos/lightweight/RoundButtons/actual/RoundButton.java
  */
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
-class RoundedButton extends Component {
+class RoundedButton extends JPanel {
 
     ActionListener actionListener;     // Post action events to listeners
     String label;                      // The Button's text

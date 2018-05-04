@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Mancala game UI
+ */
 public class MancalaView {
     private MancalaModel model;
     private ArrayList<JLayeredPane> pitPanes = new ArrayList<>();
@@ -18,68 +21,83 @@ public class MancalaView {
     /**
      * Presents a Mancala game GUI
      */
+    /* UI layers:
+     * JFrame gameFrame - GridBagLayout (1x3)
+     * +-- JLabel Title
+     * +-- JPanel gridPanel - GridBagLayout (8x2)
+     *   +-- JLayeredPanel pitContainer
+     *     +-- RoundedButton pitButton
+     *       +-- MouseListener
+     *     +-- Stones
+     *   +-- ArrayList<Pit>
+     * +-- JPanel statusPanel
+     */
     public MancalaView(){
-        // --------------------------------------------------
-        // Game JFrame (parent window)
-        // --------------------------------------------------
+        /*/**************************************************
+         * Game JFrame (parent window)
+         ***************************************************/
         JFrame gameFrame = new JFrame();
         gameFrame.setTitle("Mancala");
         gameFrame.setLayout(new GridBagLayout());
 
-        //gameFrameGBC is used when adding every section.  Generic gbc object is reused per section.
+        //gameFrameGBC is used when adding every section.
         GridBagConstraints gameFrameGBC = new GridBagConstraints();
-        GridBagConstraints gbc;
-        //Constraints are the same for all cells
+        //Constraints below are the same for all cells
         gameFrameGBC.fill = GridBagConstraints.BOTH;
         gameFrameGBC.weightx = .5;
         gameFrameGBC.gridx = 0;    // Outer structure of game window is only one column
 
-        // --------------------------------------------------
-        // Game title
-        // --------------------------------------------------
+        /*/**************************************************
+         * Game title
+         ***************************************************/
         gameFrameGBC.weighty = 0.0;
         gameFrameGBC.gridy = 0;  //Assign for each section
         gameFrameGBC.insets = new Insets(5, 0, 10, 0); // add blank space under title
-        JLabel gameTitle = new JLabel("MANCALA", JLabel.CENTER);
-        gameFrame.add(gameTitle, gameFrameGBC);
 
+        // Components ------------------------------
+        JLabel gameTitle = new JLabel("MANCALA", JLabel.CENTER);
         gameTitle.setFont(new Font("Serif", Font.PLAIN, 30));
 
+        // Add components to game frame ------------------------------
+        gameFrame.add(gameTitle, gameFrameGBC);
 
-        // --------------------------------------------------
-        // Game board
-        // --------------------------------------------------
+        /*/**************************************************
+         * Game board
+         ***************************************************/
         gameFrameGBC.weighty = 1.0;
         gameFrameGBC.gridy += 1;
         gameFrameGBC.insets = new Insets(0,0,0,0);  // Reset insets
 
-        JPanel gamePanel = new JPanel(new GridBagLayout());
-        gameFrame.add(gamePanel, gameFrameGBC);
-
-        gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = .5;
-        gbc.weighty = .5;
-        gbc.insets = new Insets(5, 5, 5, 5);
+        JPanel gridPanel = new JPanel(new GridBagLayout());  //The board itself, 14x2 grid
+        GridBagConstraints gridPanelGBC;
+        gridPanelGBC = new GridBagConstraints();
+        gridPanelGBC.fill = GridBagConstraints.BOTH;
+        gridPanelGBC.weightx = .5;
+        gridPanelGBC.weighty = .5;
+        gridPanelGBC.insets = new Insets(5, 5, 5, 5);
 
         // For each pit, including mancala
         for (int i = 0; i < PIT_TOTAL_COUNT; i++){
-            //Determine the pit's position in the grid (# 6 and 13 are double height, taking up 2 rows)
-            // 13 12 11 10 9  8  7  6    <-- columns go from 0 to 7 (that is, from PITS_PER_ROW+1 to 0)
-            //    0  1  2  3  4  5       <-- PITS_PER_ROW = 6
-//            gbc.gridy = (i < PITS_PER_ROW) ? 1 : 0;  //Only pits 0-5 are in the bottom row, else top row
-//            gbc.gridx = (i <= PITS_PER_ROW) ? i + 1 : (PIT_TOTAL_COUNT / 2) - i + PITS_PER_ROW;  //7-1, 7-2...
-            gbc.gridy = pitToPoint(i).y;
-            gbc.gridx = pitToPoint(i).x;
-            gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
+            gridPanelGBC.gridy = pitToPoint(i).y;
+            gridPanelGBC.gridx = pitToPoint(i).x;
+            gridPanelGBC.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
 
-            //Create a button for the current pit
-            //JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
+            //Create a layered container for the pit components
+            JLayeredPane pitContainer = new JLayeredPane();
+            pitContainer.setLayout(new GridBagLayout());
+            GridBagConstraints pitContainerGBC = new GridBagConstraints();
+
+            //Create a button for the current pit ---------------------
+            //Calculate label
             String side = (i <= 6) ? "A" : "B";
             int num = (i <= 6) ? i + 1 : i - 6;
-            RoundedButton pitButton = new RoundedButton(side + ((i == 6 || i == 13) ? "" : num ));
+            final String pitLabel = side + ((i == 6 || i == 13) ? "" : num);
+
+            //Create button
+            RoundedButton pitButton = new RoundedButton(pitLabel);
             pitButton.setBackground(Color.WHITE);
-            // Disable pits belonging to other player
+
+            //todo: Make pits belonging to other player unclickable
             final int selectedPit = i;
             //if(t==1){pit.setEnabled(false);}
             pitButton.addActionListener(e -> {
@@ -87,42 +105,49 @@ public class MancalaView {
                 model.move(selectedPit, p);
             });
 
-            JLayeredPane pitPane = new JLayeredPane();
-            pitPane.setLayout(new GridBagLayout());
-            GridBagConstraints pitPaneGBC = new GridBagConstraints();
-            pitPaneGBC.fill = GridBagConstraints.BOTH;
-            pitPaneGBC.weightx = .5;
-            pitPaneGBC.weighty = .5;
-            pitPane.add(pitButton, pitPaneGBC, 0);
-            pitPane.add(new JLabel(new PitIcon(10, 10, new Color(0xF5, 0xF5, 0xDC), new Color(0xF5, 0xF5, 0xDC))), 1);
-            gamePanel.add(pitPane, gbc);
-            pitPanes.add(i, pitPane);  // Keep track of the JLayeredPanes for updating
+            //add button to pit container
+            pitContainerGBC.fill = GridBagConstraints.BOTH;
+            pitContainerGBC.weightx = .5;
+            pitContainerGBC.weighty = .5;
+            pitContainer.add(pitButton, pitContainerGBC, JLayeredPane.DEFAULT_LAYER);
+
+            //todo: remove this (add temporary stones to pit container)
+            //add test stone to pit container
+            pitContainerGBC.fill = GridBagConstraints.NONE;
+            pitContainerGBC.weightx = .5;
+            pitContainerGBC.weighty = .5;
+            pitContainer.add(new JLabel(new PitIcon(10, 10, new Color(0xF5, 0xF5, 0xDC).darker(), new Color(0xF5, 0xF5, 0xDC))), pitContainerGBC, JLayeredPane.MODAL_LAYER);
+
+            gridPanel.add(pitContainer, gridPanelGBC);
+            pitPanes.add(i, pitContainer);  // Keep track of the JLayeredPanes for updating
             //pits.add(pit);  //Add button to ArrayList
         }
 
-        // --------------------------------------------------
-        // Game status panel
-        // --------------------------------------------------
+        // Add components to game frame
+        gameFrame.add(gridPanel, gameFrameGBC);
+
+        /*/**************************************************
+         * Game status panel
+         ***************************************************/
         gameFrameGBC.weighty = 0.0;
         gameFrameGBC.gridy += 1;
         gameFrameGBC.insets = new Insets(5,0,0,0);  // Reset insets
         JPanel statusPanel = new JPanel(new GridBagLayout());
         gameFrame.add(statusPanel, gameFrameGBC);
 
-        gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = .5;
-        gbc.weighty = .5;
+        GridBagConstraints statusPanelGBC = new GridBagConstraints();
+        statusPanelGBC.insets = new Insets(5, 5, 5, 5);
+        statusPanelGBC.fill = GridBagConstraints.BOTH;
+        statusPanelGBC.weightx = .5;
+        statusPanelGBC.weighty = .5;
 
-        gbc.gridx = 0;
-
+        statusPanelGBC.gridx = 0;
 
 //        Player p = this.model.getsPlayerTurn();
 //        String name = p.getName();
-        gbc.weightx = 1.0;  // Take all available space so that label centers in empty space
-        gbc.anchor = GridBagConstraints.CENTER;
-        statusPanel.add(new JLabel("_'s Turn", JLabel.CENTER), gbc);
+        statusPanelGBC.weightx = 1.0;  // Take all available space so that label centers in empty space
+        statusPanelGBC.anchor = GridBagConstraints.CENTER;
+        statusPanel.add(new JLabel("_'s Turn", JLabel.CENTER), statusPanelGBC);
         //undoCount = new JLabel(p.getName() + "'s Undo Count:"  + p.getnumOfUndos());
 
 //        gbc.gridx++;
@@ -130,11 +155,11 @@ public class MancalaView {
 //        statusPanel.add(new JLabel(""), gbc);
 //        gbc.ipadx = 0;
 
-        gbc.gridx++;
-        gbc.weightx = 0.0;  // Don't take any extra space
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.LINE_END;
-        statusPanel.add(new JButton("Player _ Undo"), gbc);
+        statusPanelGBC.gridx++;
+        statusPanelGBC.weightx = 0.0;  // Don't take any extra space
+        statusPanelGBC.fill = GridBagConstraints.NONE;
+        statusPanelGBC.anchor = GridBagConstraints.LINE_END;
+        statusPanel.add(new JButton("Player _ Undo"), statusPanelGBC);
 
 
         // --------------------------------------------------
@@ -163,6 +188,11 @@ public class MancalaView {
         );
     }
 
+    /**
+     * Helper function for observer/MVC pattern update function.
+     * Draws stones on all pits based on game state data provided by model.
+     * @param pits
+     */
     public void drawStones(ArrayList<Pit> pits) {
         for (int p = 0; p < PIT_TOTAL_COUNT; p++) {  // For each pit on the game board
             Pit pit = pits.get(p);  // Get pit object
@@ -176,8 +206,8 @@ public class MancalaView {
     }
 
     /**
-     * This method is called whenever the observed object is changed.
-     * Stone counts in each pit are updated.
+     * This method is called whenever the observed object (model) is changed, to
+     * perform the
      *
      * @param model   the observable object.
      */
