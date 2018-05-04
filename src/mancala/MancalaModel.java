@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.Random;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -303,16 +302,16 @@ public class MancalaModel {
 
 	public boolean gameOver() {
 		if (getStonesInPlayer1Row() == 0 || getStonesInPlayer2Row() == 0) {
+			board.get(6).addMoreStones(getStonesInPlayer1Row());
+			board.get(13).addMoreStones(getStonesInPlayer2Row());
 			return true;
 		} else {
 			return false;
 		}
 	}
+	
 
 	public Player getWinner() {
-		board.get(6).addMoreStones(getStonesInPlayer1Row());
-		board.get(13).addMoreStones(getStonesInPlayer2Row());
-
 		if (board.get(6).getNumbOfStones() > board.get(13).getNumbOfStones()) {
 			return player1;
 		} else if (board.get(6).getNumbOfStones() < board.get(13).getNumbOfStones()) {

@@ -7,16 +7,12 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -40,6 +36,7 @@ public class MancalaTest {
 	private static JLabel undoCount;
 	private static ArrayList<Pit> copyOfBoard = new ArrayList<Pit>();
 	private static JButton undoButton;
+	private static JFrame winnerFrame;
 	
 	public static void main(String args[]){
 		mainMenu();
@@ -272,7 +269,7 @@ public class MancalaTest {
         {
             public void stateChanged(ChangeEvent e)
             {
-            	
+            	if(!model.gameOver()){
             		board= model.getBoard();
             		topPanel.remove(whosTurn);
             		leftPanel.remove(player2Score);
@@ -292,6 +289,10 @@ public class MancalaTest {
             		rightPanel.add(player1Score);
             		undoPanel.add(undoCount);
                 	boardFrame.revalidate();
+            	}else{
+            		boardFrame.dispose();
+            		winnerPanel();
+            	}
             	
             }
         });
@@ -353,6 +354,27 @@ public class MancalaTest {
 		
 		
 	}
+	
+	
+	public static void winnerPanel(){
+		winnerFrame = new JFrame();
+		winnerFrame.setSize(300, 200);
+		String getWin ="" ;
+		if(model.getWinner()== null){
+			getWin = "Game is a Draw";
+		}
+		else{
+			getWin = "Winner is " + model.getWinner().getName();
+		}
+
+		JLabel winner = new JLabel(getWin, JLabel.CENTER);
+		
+		winnerFrame.add(winner);
+		winnerFrame.setVisible(true);
+        winnerFrame.setTitle("Winner");
+        winnerFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
 	
 	
 	public static void getTurn(){
