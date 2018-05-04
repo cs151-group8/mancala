@@ -8,7 +8,7 @@ public class PitIconTest {
         JFrame frame = new JFrame();
 
         Color shadowColor = new Color(0xE8, 0x68, 0x10);
-        PitIcon pi = new PitIcon(80, 100, Color.ORANGE, shadowColor);
+        PitIcon pi = new PitIcon(frame.getWidth(), frame.getHeight(), Color.ORANGE, shadowColor);
         JComponent pitLabel = new JLabel(pi);  //Why does an icon need to be in a label?
 
         frame.setLayout(new FlowLayout());
