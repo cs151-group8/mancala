@@ -31,17 +31,16 @@ public class MancalaModel {
 		player2 = new Player("Player 2", 13);
 		populateBoard(board, stone); // used to add number of stones to each
 		copyOfBoard = new ArrayList<Pit>();
-										// pit;
+		// pit;
 		player1Pits = new ArrayList<Pit>(board.subList(0, 6));
 		player2Pits = new ArrayList<Pit>(board.subList(7, 13));
 		listeners = new ArrayList<ChangeListener>();
-		
+
 	}
 
 	public void attach(ChangeListener l) {
 		listeners.add(l);
 	}
-	
 
 	/**
 	 * this will add 3 stones to each pit in the arraylist except pit 6 and 13.
@@ -84,28 +83,26 @@ public class MancalaModel {
 		return board.get(pit).getNumbOfStones();
 	}
 
-	
 	/**
 	 * this method will overwrite current board with clone
+	 * 
 	 * @param clone
 	 */
-	public void overwriteBoard(ArrayList<Pit> clone){
+	public void overwriteBoard(ArrayList<Pit> clone) {
 		board = new ArrayList<Pit>();
-		for(Pit p: clone){
+		for (Pit p : clone) {
 			board.add(p);
 		}
-		
+
 	}
-	
-	
-	public void makeCopy(ArrayList<Pit> b){
+
+	public void makeCopy(ArrayList<Pit> b) {
 		copyOfBoard = new ArrayList<Pit>();
-		for(int i = 0; i<=13; i++){
+		for (int i = 0; i <= 13; i++) {
 			copyOfBoard.add(new Pit(b.get(i).getNumbOfStones()));
 		}
-		
+
 	}
-	
 
 	/**
 	 * returns the board
@@ -118,7 +115,7 @@ public class MancalaModel {
 
 	public void move(int pitSelected, Player player) {
 		makeCopy(board);
-		
+
 		lastTurn = turnCount;
 
 		if (turnCount != playersTurn) {
@@ -128,16 +125,34 @@ public class MancalaModel {
 		// move number of stones to hand and set the put to 0
 		StoneInHand = board.get(pitSelected).getNumbOfStones();
 		board.get(pitSelected).setNumbOfStone(0);
-		
-		for (int j = 1; j <= StoneInHand; j++) {
-			board.get((pitSelected + j) % 14).addAStone();
+
+		if (getsWhoTurn() == 0 && getsPlayerTurn() == player1) {
+			for (int j = 1; j <= StoneInHand; j++) {
+				if ((pitSelected + j)%14 == 13) {
+					StoneInHand = StoneInHand + 1;
+				}
+				else{
+				board.get((pitSelected + j) % 14).addAStone();
+				}
+			}
 		}
 		
+		if (getsWhoTurn() == 1 && getsPlayerTurn() == player2) {
+			for (int i = 1; i <= StoneInHand; i++) {
+				if ((pitSelected + i)%14 == 6) {
+					StoneInHand = StoneInHand + 1;
+				}
+				else{
+				board.get((pitSelected + i) % 14).addAStone();
+				}
+			}
+		}
+
 		lastStonePos = pitSelected + StoneInHand % 14;
-		
+
 		freeTurn();
 		// players 1 turn
-		if (getsWhoTurn() == 0 && getsPlayerTurn()== player1) {
+		if (getsWhoTurn() == 0 && getsPlayerTurn() == player1) {
 			// if stone lands in an empty pit, it will get all the opponents
 			// stone on opposite side
 			if (lastStonePos >= 0 && lastStonePos <= 5 && board.get(lastStonePos).getNumbOfStones() == 1) {
@@ -147,7 +162,7 @@ public class MancalaModel {
 		}
 
 		// players2 turn
-		if (getsWhoTurn() == 1 && getsPlayerTurn()== player2) {
+		if (getsWhoTurn() == 1 && getsPlayerTurn() == player2) {
 			// if stone lands in an empty pit, it will get all the opponents
 			// stone on opposite side
 			if (lastStonePos >= 7 && lastStonePos <= 12 && board.get(lastStonePos).getNumbOfStones() == 1) {
@@ -159,14 +174,14 @@ public class MancalaModel {
 		if (freeTurn) {
 			turnCount = turnCount + 1; // gets free turn
 		}
-		
+
 		turnCount++;
-		
-		System.out.println("turn count:" +turnCount);
-		
+
+		System.out.println("turn count:" + turnCount);
+
 		player1Pits = new ArrayList<Pit>(board.subList(0, 6));
 		player2Pits = new ArrayList<Pit>(board.subList(7, 13));
- 
+
 		ChangeEvent event = new ChangeEvent(this);
 		for (ChangeListener l : listeners)
 			l.stateChanged(event);
@@ -175,18 +190,15 @@ public class MancalaModel {
 
 	public void freeTurn() {
 		if (lastStonePos == 6 && getsWhoTurn() == 0) {
-			freeTurn= true;
-		}
-		else if (lastStonePos == 13 && getsWhoTurn() == 1){
 			freeTurn = true;
-		}
-		else{
+		} else if (lastStonePos == 13 && getsWhoTurn() == 1) {
+			freeTurn = true;
+		} else {
 			freeTurn = false;
 		}
 	}
-	
-	
-	public boolean getFreeTurn(){
+
+	public boolean getFreeTurn() {
 		return freeTurn;
 	}
 
@@ -196,64 +208,62 @@ public class MancalaModel {
 			overwriteBoard(copyOfBoard);
 			turnCount = lastTurn;
 			playersTurn = getTurnCount();
-			if(freeTurn){
+			if (freeTurn) {
 				resetFreeTurnStatus();
 			}
-			
-			System.out.println("Player Name: " + p.getName()+" Num Of Undos " + p.numOfUndos);
+
+			System.out.println("Name: " + p.getName() + "& Num Of Undos " + p.numOfUndos);
 
 			ChangeEvent event = new ChangeEvent(this);
 			for (ChangeListener l : listeners)
 				l.stateChanged(event);
 		}
 	}
-	
-	public void resetFreeTurnStatus(){
+
+	public void resetFreeTurnStatus() {
 		freeTurn = false;
 	}
-	
+
 	/***
 	 * used for testing
+	 * 
 	 * @param b
 	 */
-	public void printBoard(ArrayList<Pit> b){
+	public void printBoard(ArrayList<Pit> b) {
 		String print = "";
-		for(Pit p: b){
-			print = print + p.getNumbOfStones()+"   ";
+		for (Pit p : b) {
+			print = print + p.getNumbOfStones() + "   ";
 		}
 		System.out.println(print);
 	}
-	
 
 	public int getsWhoTurn() {
 		return (turnCount % 2);
 		// 0 for player 1
 		// 1 for player 2
 	}
-	
-	public int getTurnCount(){
+
+	public int getTurnCount() {
 		return turnCount;
 	}
-	
-	public void addTurnCount(){
+
+	public void addTurnCount() {
 		turnCount++;
 	}
-	
-	
-	public Player getsPlayerTurn(){
-		if (getsWhoTurn() == 0){
+
+	public Player getsPlayerTurn() {
+		if (getsWhoTurn() == 0) {
 			return player1;
 		}
 		return player2;
 	}
-	
-	public Player getOtherPlayers(){
-		if (getsWhoTurn() == 1){
+
+	public Player getOtherPlayers() {
+		if (getsWhoTurn() == 1) {
 			return player1;
 		}
 		return player2;
 	}
-	
 
 	/**
 	 * set to 0 for player 1 first or 1 for player 2 first
@@ -302,17 +312,15 @@ public class MancalaModel {
 	public Player getWinner() {
 		board.get(6).addMoreStones(getStonesInPlayer1Row());
 		board.get(13).addMoreStones(getStonesInPlayer2Row());
-		
-		if(board.get(6).getNumbOfStones()>board.get(13).getNumbOfStones()){
+
+		if (board.get(6).getNumbOfStones() > board.get(13).getNumbOfStones()) {
 			return player1;
-		}
-		else if(board.get(6).getNumbOfStones()<board.get(13).getNumbOfStones()){
+		} else if (board.get(6).getNumbOfStones() < board.get(13).getNumbOfStones()) {
 			return player2;
-		}
-		else{
+		} else {
 			return null;
 		}
-		
+
 	}
 
 }
