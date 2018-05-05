@@ -68,7 +68,13 @@ public class MancalaView {
         gameFrameGBC.gridy += 1;
         gameFrameGBC.insets = new Insets(0,0,0,0);  // Reset insets
 
-        JPanel gridPanel = new JPanel(new GridBagLayout());  //The board itself, 14x2 grid
+        //Move these to be class variables?
+        //LayeredPane -> JPanel (whole board) -> JPanelSquare x1000
+        JLayeredPane layeredPane = new JLayeredPane();
+        JPanel gridPanel = new JPanel(new GridBagLayout());  //The board itself, 8x2 grid
+        ArrayList<JPanel> pitPanels = new ArrayList<>();
+
+
         GridBagConstraints gridPanelGBC;
         gridPanelGBC = new GridBagConstraints();
         gridPanelGBC.fill = GridBagConstraints.BOTH;
@@ -82,49 +88,16 @@ public class MancalaView {
             gridPanelGBC.gridx = pitToPoint(i).x;
             gridPanelGBC.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
 
-            //Create a layered container for the pit components
-            JLayeredPane pitContainer = new JLayeredPane();
-            pitContainer.setLayout(new GridBagLayout());
-            GridBagConstraints pitContainerGBC = new GridBagConstraints();
-
-            //Create a button for the current pit ---------------------
-            //Calculate label
-            String side = (i <= 6) ? "A" : "B";
-            int num = (i <= 6) ? i + 1 : i - 6;
-            final String pitLabel = side + ((i == 6 || i == 13) ? "" : num);
-
-            //Create button
-            RoundedButton pitButton = new RoundedButton(pitLabel);
-            pitButton.setBackground(Color.WHITE);
-
-            //todo: Make pits belonging to other player unclickable
-            final int selectedPit = i;
-            //if(t==1){pit.setEnabled(false);}
-            pitButton.addActionListener(e -> {
-                Player p = model.getsPlayerTurn();
-                model.move(selectedPit, p);
-            });
-
-            //add button to pit container
-            pitContainerGBC.fill = GridBagConstraints.BOTH;
-            pitContainerGBC.weightx = .5;
-            pitContainerGBC.weighty = .5;
-            pitContainer.add(pitButton, pitContainerGBC, JLayeredPane.DEFAULT_LAYER);
-
-            //todo: remove this (add temporary stones to pit container)
-            //add test stone to pit container
-            pitContainerGBC.fill = GridBagConstraints.NONE;
-            pitContainerGBC.weightx = .5;
-            pitContainerGBC.weighty = .5;
-            pitContainer.add(new JLabel(new PitIcon(10, 10, new Color(0xF5, 0xF5, 0xDC).darker(), new Color(0xF5, 0xF5, 0xDC))), pitContainerGBC, JLayeredPane.MODAL_LAYER);
-
-            gridPanel.add(pitContainer, gridPanelGBC);
-            pitPanes.add(i, pitContainer);  // Keep track of the JLayeredPanes for updating
-            //pits.add(pit);  //Add button to ArrayList
+            JPanel pitPanel = new PitPanel(i);      //Create new pit JPanel
+            pitPanels.add(i, pitPanel);             //Add pit panel to arraylist
+            gridPanel.add(pitPanel, gridPanelGBC);  //Add pit panel to game board grid panel
         }
 
+        layeredPane.add(gridPanel, JLayeredPane.DEFAULT_LAYER);
+        // pitPanels.get(3).add(???);
+
         // Add components to game frame
-        gameFrame.add(gridPanel, gameFrameGBC);
+        gameFrame.add(layeredPane, gameFrameGBC);
 
         /*/**************************************************
          * Game status panel
@@ -215,6 +188,48 @@ public class MancalaView {
         ArrayList<Pit> pits = model.getBoard();
         drawStones(pits);
     }
+
+    class PitPanel extends JPanel{
+        private int index;
+        private int stones;
+
+        public PitPanel(int index) {
+            this.index = index;
+            this.stones = 0;
+            this.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+
+            //Create a button for the current pit ---------------------
+            //Calculate label
+            String side = (index <= 6) ? "A" : "B";
+            int num = (index <= 6) ? index + 1 : index - 6;
+            final String pitLabel = side + ((index == 6 || index == 13) ? "" : num);
+
+            //Create button
+            RoundedButton pitButton = new RoundedButton(pitLabel);
+            pitButton.setBackground(Color.WHITE);
+            this.add(pitButton, gbc);
+
+            //todo: Make pits belonging to other player unclickable
+//            final int selectedPit = i;
+//            //if(t==1){pit.setEnabled(false);}
+//            pitButton.addActionListener(e -> {
+//                Player p = model.getsPlayerTurn();
+//                model.move(selectedPit, p);
+//            });
+        }
+
+        @Override
+        public Component add(Component comp) {
+            stones++;
+            return super.add(comp);
+        }
+
+        @Override
+        public void remove(Component comp) {
+            stones--;
+            super.remove(comp);
+        }
+    }
+
 }
-
-
