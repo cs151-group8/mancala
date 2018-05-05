@@ -230,36 +230,57 @@ public class MancalaTest {
 		//left panel
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new GridLayout(0,1));
-		JLabel player2Mancala = new JLabel("Player 2's Pit");
-		player2Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
-		
-		
-		
-		leftPanel.add(player2Mancala);
-		leftPanel.add(player2Score);
-		
-		
-		//right panel
-		JPanel rightPanel = new JPanel();
-		rightPanel.setLayout(new GridLayout(0,1));
-		JLabel player1Mancala = new JLabel("Player 1's Pit");
-		player1Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
-		
-		
-		
-		rightPanel.add(player1Mancala);
-		rightPanel.add(player1Score);
-		
-		//top panel
-		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new GridLayout(0,1));
-		JLabel gameTitle = new JLabel("MANCALA", JLabel.CENTER);
-		gameTitle.setFont(new Font("Serif", Font.PLAIN, 30));
-		topPanel.add(gameTitle);
-		topPanel.add(whosTurn);		
-		
-		
-		model.attach(new ChangeListener()
+
+        //leftPanel.add(player2Mancala);
+        leftPanel.add(player2Score);
+
+
+        //right panel
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new GridLayout(0,1));
+		//rightPanel.add(player1Mancala);
+
+        rightPanel.add(player1Score);
+
+        //top panel
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridBagLayout());
+        JLabel gameTitle = new JLabel("MANCALA", JLabel.CENTER);
+        gameTitle.setFont(new Font("Serif", Font.PLAIN, 30));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.weightx = .5;
+        gbc.weighty = .5;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(5, 0, 10, 0); // add blank space under title
+        topPanel.add(gameTitle, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        topPanel.add(whosTurn, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.LAST_LINE_START;
+        gbc.gridwidth = 150;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        JLabel player2Mancala = new JLabel("Player 2's Pit");
+        player2Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
+        topPanel.add(player2Mancala, gbc);
+
+
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.LAST_LINE_END;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        gbc.gridwidth = 150;
+        JLabel player1Mancala = new JLabel("Player 1's Pit");
+        player1Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
+        topPanel.add(player1Mancala, gbc);
+
+        model.attach(new ChangeListener()
         {
             public void stateChanged(ChangeEvent e)
             {
@@ -287,19 +308,19 @@ public class MancalaTest {
             		boardFrame.dispose();
             		winnerPanel();
             	}
-            	
+
             }
         });
-		
-		
-		boardFrame.add(undoPanel, BorderLayout.SOUTH);
-		boardFrame.add(leftPanel, BorderLayout.WEST);
-		boardFrame.add(rightPanel, BorderLayout.EAST);
-		boardFrame.add(centerPanel, BorderLayout.CENTER);
-		boardFrame.add(topPanel, BorderLayout.NORTH);
-		
-		
-		boardFrame.setVisible(true);
+
+
+        boardFrame.add(undoPanel, BorderLayout.SOUTH);
+        boardFrame.add(leftPanel, BorderLayout.WEST);
+        boardFrame.add(rightPanel, BorderLayout.EAST);
+        boardFrame.add(centerPanel, BorderLayout.CENTER);
+        boardFrame.add(topPanel, BorderLayout.NORTH);
+
+
+        boardFrame.setVisible(true);
         boardFrame.setTitle("Mancala");
         boardFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
