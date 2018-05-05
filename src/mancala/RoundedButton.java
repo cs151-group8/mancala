@@ -10,17 +10,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
-class RoundedButton extends JPanel {
+class RoundedButton extends JButton {
 
     ActionListener actionListener;     // Post action events to listeners
-    String label;                      // The Button's text
+    //String label;                      // The Button's text
     protected boolean pressed = false; // true if the button is detented.
 
     /**
      * Constructs a RoundedButton with no label.
      */
     public RoundedButton() {
-        this("");
+        super("");
     }
 
     /**
@@ -29,7 +29,7 @@ class RoundedButton extends JPanel {
      * @param label the label of the button
      */
     public RoundedButton(String label) {
-        this.label = label;
+        super(label);
         enableEvents(AWTEvent.MOUSE_EVENT_MASK);
     }
 
@@ -37,14 +37,14 @@ class RoundedButton extends JPanel {
      * gets the label
      */
     public String getLabel() {
-        return label;
+        return this.getText();
     }
 
     /**
      * sets the label
      */
     public void setLabel(String label) {
-        this.label = label;
+        this.setText(label);
         invalidate();
         repaint();
     }
@@ -72,8 +72,8 @@ class RoundedButton extends JPanel {
         if (f != null) {
             FontMetrics fm = getFontMetrics(getFont());
             g.setColor(getForeground());
-            //g.drawString(label, getWidth() / 2 - fm.stringWidth(label) / 2, getHeight() / 2 + fm.getMaxDescent());
-            g.drawString(label, 5, 15);
+            g.drawString(this.getText(), getWidth() / 2 - fm.stringWidth(this.getText()) / 2, getHeight() / 2 + fm.getMaxDescent());
+            //g.drawString(this.getText(), 5, 15);
         }
     }
 
@@ -85,7 +85,7 @@ class RoundedButton extends JPanel {
         Font f = getFont();
         if (f != null) {
             FontMetrics fm = getFontMetrics(getFont());
-            int max = Math.max(fm.stringWidth(label) + 40, fm.getHeight() + 40);
+            int max = Math.max(fm.stringWidth(this.getText()) + 40, fm.getHeight() + 40);
             return new Dimension(max, max);
         } else {
             return new Dimension(100, 100);
@@ -149,7 +149,7 @@ class RoundedButton extends JPanel {
             case MouseEvent.MOUSE_RELEASED:
                 if (actionListener != null) {
                     actionListener.actionPerformed(new ActionEvent(
-                            this, ActionEvent.ACTION_PERFORMED, label));
+                            this, ActionEvent.ACTION_PERFORMED, this.getText()));
                 }
                 // render myself normal again
                 if (pressed == true) {

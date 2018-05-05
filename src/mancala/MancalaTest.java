@@ -397,7 +397,7 @@ public class MancalaTest {
 	
 }
 
-class PitButton extends JButton {
+class PitButton extends RoundedButton {
     public PitButton(String text, StyleStrategy initialStrategy){
         this.setStyleStrategy(initialStrategy);
         this.setText(text);
