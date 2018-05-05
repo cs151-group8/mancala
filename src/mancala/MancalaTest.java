@@ -312,7 +312,7 @@ public class MancalaTest {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = .5;
         gbc.weighty = .5;
-        gbc.insets = new Insets(5, 0, 10, 0); // add blank space under title
+        gbc.insets = new Insets(5, 5, 5, 5); // add blank space under title
 
         // For each pit, including mancala
         for (int i = 0; i < PIT_TOTAL_COUNT; i++){
