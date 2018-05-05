@@ -130,29 +130,29 @@ public class MancalaTest {
 		PickLayoutPanel.setPreferredSize(new Dimension(10, 20));
 		JLabel layoutLabel = new JLabel ("Choose a Theme:");
 		
-		JButton blue = new JButton("Blue");
-		JButton red = new JButton("Red");
+		JButton light = new JButton("Light");
+		JButton dark = new JButton("Dark");
 		PickLayoutPanel.add(layoutLabel);
-		PickLayoutPanel.add(blue);
-		PickLayoutPanel.add(red);
+		PickLayoutPanel.add(light);
+		PickLayoutPanel.add(dark);
 
-		blue.addActionListener(new ActionListener(){
+		light.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				//add function
 				
-				if (e.getSource() == blue) {
-			        blue.setEnabled(false);
-				    red.setEnabled(true);
+				if (e.getSource() == light) {
+			        light.setEnabled(false);
+				    dark.setEnabled(true);
 				}
 			}
 		});
 		
-		red.addActionListener(new ActionListener(){
+		dark.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				//add function
-				if (e.getSource() == red) {
-			        red.setEnabled(false);
-				    blue.setEnabled(true);
+				if (e.getSource() == dark) {
+			        dark.setEnabled(false);
+				    light.setEnabled(true);
 				}
 				
 			}
@@ -167,7 +167,7 @@ public class MancalaTest {
 		startButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 			mainMenu.dispose();
-			startGame();
+			startGame(!dark.isEnabled() ? new DarkStyleStrategy() : new LightStyleStrategy());
 			}
 		});
 		
@@ -192,12 +192,13 @@ public class MancalaTest {
 		mainMenu.setVisible(true);
 		mainMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-	
-	
+
+	static StyleStrategy selectedStrategy;
 	/**
 	 * this method starts when the player press starts.. it will draw the board
 	 */
-	public static void startGame(){
+	public static void startGame(StyleStrategy initialStrategy){
+        selectedStrategy = initialStrategy;
 		boardFrame = new JFrame();
 		boardFrame.setSize(700, 400);
 		boardFrame.setLayout(new BorderLayout());
@@ -310,12 +311,12 @@ public class MancalaTest {
         boardFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}
-	
+
 	public static void updateBoard(){
 		int t = model.getsWhoTurn();
 		for(int i=0; i<6 ;i++){
-			JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
-			pit.setBackground(Color.WHITE);
+			PitButton pit = new PitButton(i+" ["+board.get(i).getNumbOfStones()+"]", selectedStrategy);
+			//pit.setBackground(Color.WHITE);
 			pitPanel1.add(pit);
 			final int selectedPit = i;
 			if(t==1){
@@ -333,8 +334,8 @@ public class MancalaTest {
 		}
 		
 		for(int i= 12; i>=7 ;i--){
-			JButton pit = new JButton(i+" ["+board.get(i).getNumbOfStones()+"]");
-			pit.setBackground(Color.WHITE);
+            PitButton pit = new PitButton(i+" ["+board.get(i).getNumbOfStones()+"]", selectedStrategy);
+			//pit.setBackground(Color.WHITE);
 			pitPanel2.add(pit);
 			final int selectedPit = i;
 			if(t==0){
@@ -392,6 +393,69 @@ public class MancalaTest {
 		player2Score.setBackground(Color.WHITE);
 		player2Score.setEnabled(false);
 	}
+
 	
-	
+}
+
+class PitButton extends JButton {
+    public PitButton(String text, StyleStrategy initialStrategy){
+        this.setStyleStrategy(initialStrategy);
+        this.setText(text);
+    }
+
+    public PitButton(String text){
+        this.setText(text);
+    }
+
+    public PitButton(StyleStrategy initialStrategy){
+        this.setStyleStrategy(initialStrategy);
+    }
+
+    public void setStyleStrategy(StyleStrategy strategy){
+        this.setBackground(strategy.getPitColor());
+        this.setForeground(strategy.getPitTextColor());
+    }
+}
+
+interface StyleStrategy{
+    //Color getBackgroundColor();
+    //Color getTextColor();
+    Color getPitColor();
+    Color getPitTextColor();
+}
+
+class LightStyleStrategy implements StyleStrategy{
+
+//        @Override
+//        public Color getBackgroundColor() {
+//            return Color.GRAY;
+//        }
+//
+//        @Override
+//        public Color getTextColor() {
+//            return Color.BLACK;
+//        }
+
+    @Override
+    public Color getPitColor() {
+        return Color.LIGHT_GRAY.brighter().brighter();
+    }
+
+    @Override
+    public Color getPitTextColor() {
+        return Color.BLACK;
+    }
+}
+
+class DarkStyleStrategy implements StyleStrategy{
+
+    @Override
+    public Color getPitColor() {
+        return Color.DARK_GRAY.darker();
+    }
+
+    @Override
+    public Color getPitTextColor() {
+        return Color.LIGHT_GRAY.brighter();
+    }
 }
