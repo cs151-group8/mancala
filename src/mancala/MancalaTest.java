@@ -232,15 +232,14 @@ public class MancalaTest {
 		leftPanel.setLayout(new GridLayout(0,1));
 
         //leftPanel.add(player2Mancala);
-        leftPanel.add(player2Score);
+        //leftPanel.add(player2Score);
 
 
         //right panel
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new GridLayout(0,1));
 		//rightPanel.add(player1Mancala);
-
-        rightPanel.add(player1Score);
+        //rightPanel.add(player1Score);
 
         //top panel
         JPanel topPanel = new JPanel();
@@ -287,8 +286,8 @@ public class MancalaTest {
             	if(!model.gameOver()){
             		board= model.getBoard();
             		topPanel.remove(whosTurn);
-            		leftPanel.remove(player2Score);
-            		rightPanel.remove(player1Score);
+//            		leftPanel.remove(player2Score);
+//            		rightPanel.remove(player1Score);
             		undoPanel.remove(undoCount);
                 	centerPanel.removeAll();
                 	pits.clear();
@@ -300,8 +299,8 @@ public class MancalaTest {
 //                	centerPanel.add(pitPanel2);
 //                	centerPanel.add(pitPanel1);
                 	topPanel.add(whosTurn);
-                	leftPanel.add(player2Score);
-            		rightPanel.add(player1Score);
+//                	leftPanel.add(player2Score);
+//            		rightPanel.add(player1Score);
             		undoPanel.add(undoCount);
                 	boardFrame.revalidate();
             	}else{
@@ -355,7 +354,10 @@ public class MancalaTest {
 
             //todo: Either use Rusty's mancala or original mancala
             if (i == 6 || i == 13){
-                //for now don't use Rusty's
+                //Comment this out to disable Rusty's mancala
+                pit.setEnabled(false);  //Override above calculation and disable if mancala
+                pits.add(pit);
+                centerPanel.add(pit, gbc);  //Add pit panel to game board grid panel
             }
             else{
                 pits.add(pit);
