@@ -1,10 +1,5 @@
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -28,8 +23,6 @@ public class MancalaTest {
 	private static JLabel title;
 	private static JLabel whosTurn;
 	private static ArrayList<Pit> board = new ArrayList<Pit>();
-	private static JPanel pitPanel1 = new JPanel();
-	private static JPanel pitPanel2 = new JPanel();
 	private static JPanel centerPanel= new JPanel();
 	private static JButton player1Score;
 	private static JButton player2Score;
@@ -202,7 +195,7 @@ public class MancalaTest {
 		boardFrame = new JFrame();
 		boardFrame.setSize(700, 400);
 		boardFrame.setLayout(new BorderLayout());
-		
+
 		getTurn();
 		
 		JPanel undoPanel = new JPanel();
@@ -220,17 +213,17 @@ public class MancalaTest {
 						Player p = model.getsPlayerTurn();
 						model.undo(p);
 						}
-					  }		
+					  }
 				    });
 		
 		
-		centerPanel.setLayout(new GridLayout(6, 0));
-		
-		updateBoard();
+		centerPanel.setLayout(new GridBagLayout());
+
+        updateBoard();
 	
 		
-		centerPanel.add(pitPanel2);
-		centerPanel.add(pitPanel1);
+//		centerPanel.add(pitPanel2);
+//		centerPanel.add(pitPanel1);
 		
 		getScore();
 		
@@ -278,13 +271,13 @@ public class MancalaTest {
             		undoPanel.remove(undoCount);
                 	centerPanel.removeAll();
                 	pits.clear();
-                	pitPanel1.removeAll();
-                	pitPanel2.removeAll();
+//                	pitPanel1.removeAll();
+//                	pitPanel2.removeAll();
                 	updateBoard();
                 	getTurn();
                 	getScore();
-                	centerPanel.add(pitPanel2);
-                	centerPanel.add(pitPanel1);
+//                	centerPanel.add(pitPanel2);
+//                	centerPanel.add(pitPanel1);
                 	topPanel.add(whosTurn);
                 	leftPanel.add(player2Score);
             		rightPanel.add(player1Score);
@@ -314,45 +307,42 @@ public class MancalaTest {
 
 	public static void updateBoard(){
 		int t = model.getsWhoTurn();
-		for(int i=0; i<6 ;i++){
-			PitButton pit = new PitButton(i+" ["+board.get(i).getNumbOfStones()+"]", selectedStrategy);
-			//pit.setBackground(Color.WHITE);
-			pitPanel1.add(pit);
-			final int selectedPit = i;
-			if(t==1){
-				pit.setEnabled(false);
-			}
-			pit.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					Player p = model.getsPlayerTurn();
-					model.move(selectedPit, p);
-					
-				}
-				
-			});
-			pits.add(pit);
-		}
-		
-		for(int i= 12; i>=7 ;i--){
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = .5;
+        gbc.weighty = .5;
+        gbc.insets = new Insets(5, 0, 10, 0); // add blank space under title
+
+        // For each pit, including mancala
+        for (int i = 0; i < PIT_TOTAL_COUNT; i++){
             PitButton pit = new PitButton(i+" ["+board.get(i).getNumbOfStones()+"]", selectedStrategy);
-			//pit.setBackground(Color.WHITE);
-			pitPanel2.add(pit);
-			final int selectedPit = i;
-			if(t==0){
-				pit.setEnabled(false);
-			}
-			
-			pit.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					Player p = model.getsPlayerTurn();
-					model.move(selectedPit, p);
-					
-				}
-				
-			});
-			pits.add(pit);
-		}
-		
+            final int selectedPit = i;
+            if(t==1){
+                pit.setEnabled(false);
+            }
+            pit.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    Player p = model.getsPlayerTurn();
+                    model.move(selectedPit, p);
+
+                }
+
+            });
+
+            gbc.gridy = pitToPoint(i).y;
+            gbc.gridx = pitToPoint(i).x;
+            gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
+
+            //todo: Either use Rusty's mancala or original mancala
+            if (i == 6 || i == 13){
+                //for now don't use Rusty's
+            }
+            else{
+                pits.add(pit);
+                centerPanel.add(pit, gbc);  //Add pit panel to game board grid panel
+            }
+        }
 		
 	}
 	
@@ -394,7 +384,27 @@ public class MancalaTest {
 		player2Score.setEnabled(false);
 	}
 
-	
+    //todo: These should be defined by and retrieved from the model
+    private static final int PITS_PER_ROW = 6;  //pits in a row, NOT counting mancala
+    private static final int PIT_ROWS = 2;         //some variants have more than 2 rows, but only 2 rows supported at this time
+    private static final int PIT_TOTAL_COUNT = PITS_PER_ROW * PIT_ROWS + 2;
+    /**
+     * Determines the pit's position in the game board grid (# 6 and 13 are double height, taking up 2 rows)
+     *         0    1    2    3    4    5    6    7 <-- gridx
+     * gridy +----+----+----+----+----+----+----+----+
+     *   0   | 13 | 12 | 11 | 10 | 9  | 8  | 7  | 6  | <-- pits 6 and 13 are at gridy = 0
+     *       |    +----+----+----+----+----+----+    |
+     *   1   |    | 0  | 1  | 2  | 3  | 4  | 5  |    |
+     *       +----+----+----+----+----+----+----+----+
+     * @param pit index of pit to get coordinates for
+     * @return Point representing gridx and gridy for pit
+     */
+    private static Point pitToPoint(int pit){
+        return new Point(
+                pit <= PITS_PER_ROW ? pit + 1 : (PIT_TOTAL_COUNT / 2) - pit + PITS_PER_ROW,  // y coordinate
+                pit < PITS_PER_ROW ? 1 : 0   // x coordinate
+        );
+    }
 }
 
 class PitButton extends RoundedButton {
