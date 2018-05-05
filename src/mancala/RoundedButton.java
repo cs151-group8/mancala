@@ -137,51 +137,53 @@ class RoundedButton extends JButton {
     @Override
     public void processMouseEvent(MouseEvent e) {
         Graphics g;
-        switch (e.getID()) {
-            case MouseEvent.MOUSE_PRESSED:
-                // render myself inverted....
-                pressed = true;
-
-                // Repaint might flicker a bit. To avoid this, you can use
-                // double buffering (see the Gauge example).
-                repaint();
-                break;
-            case MouseEvent.MOUSE_RELEASED:
-                if (actionListener != null) {
-                    actionListener.actionPerformed(new ActionEvent(
-                            this, ActionEvent.ACTION_PERFORMED, this.getText()));
-                }
-                // render myself normal again
-                if (pressed == true) {
-                    pressed = false;
+        if (this.isEnabled()) {
+            switch (e.getID()) {
+                case MouseEvent.MOUSE_PRESSED:
+                    // render myself inverted....
+                    pressed = true;
 
                     // Repaint might flicker a bit. To avoid this, you can use
                     // double buffering (see the Gauge example).
                     repaint();
-                }
-                break;
-            case MouseEvent.MOUSE_ENTERED:
+                    break;
+                case MouseEvent.MOUSE_RELEASED:
+                    if (actionListener != null) {
+                        actionListener.actionPerformed(new ActionEvent(
+                                this, ActionEvent.ACTION_PERFORMED, this.getText()));
+                    }
+                    // render myself normal again
+                    if (pressed == true) {
+                        pressed = false;
 
-                break;
-            case MouseEvent.MOUSE_EXITED:
-                if (pressed == true) {
-                    // Cancel! Don't send action event.
-                    pressed = false;
+                        // Repaint might flicker a bit. To avoid this, you can use
+                        // double buffering (see the Gauge example).
+                        repaint();
+                    }
+                    break;
+                case MouseEvent.MOUSE_ENTERED:
 
-                    // Repaint might flicker a bit. To avoid this, you can use
-                    // double buffering (see the Gauge example).
-                    repaint();
+                    break;
+                case MouseEvent.MOUSE_EXITED:
+                    if (pressed == true) {
+                        // Cancel! Don't send action event.
+                        pressed = false;
 
-                    // Note: for a more complete button implementation,
-                    // you wouldn't want to cancel at this point, but
-                    // rather detect when the mouse re-entered, and
-                    // re-highlight the button. There are a few state
-                    // issues that that you need to handle, which we leave
-                    // this an an excercise for the reader (I always
-                    // wanted to say that!)
-                }
-                break;
+                        // Repaint might flicker a bit. To avoid this, you can use
+                        // double buffering (see the Gauge example).
+                        repaint();
+
+                        // Note: for a more complete button implementation,
+                        // you wouldn't want to cancel at this point, but
+                        // rather detect when the mouse re-entered, and
+                        // re-highlight the button. There are a few state
+                        // issues that that you need to handle, which we leave
+                        // this an an excercise for the reader (I always
+                        // wanted to say that!)
+                    }
+                    break;
+            }
+            super.processMouseEvent(e);
         }
-        super.processMouseEvent(e);
     }
 }

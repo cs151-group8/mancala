@@ -339,9 +339,7 @@ public class MancalaTest {
         for (int i = 0; i < PIT_TOTAL_COUNT; i++){
             PitButton pit = new PitButton(i+" ["+board.get(i).getNumbOfStones()+"]", selectedStrategy);
             final int selectedPit = i;
-            if(t==1){
-                pit.setEnabled(false);
-            }
+            pit.setEnabled(i < 6 ? t==0 : t==1);
             pit.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
                     Player p = model.getsPlayerTurn();
