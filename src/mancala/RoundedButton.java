@@ -30,6 +30,8 @@ class RoundedButton extends JButton {
      */
     public RoundedButton(String label) {
         super(label);
+        //setFont(getFont().deriveFont(Font.BOLD));
+
         enableEvents(AWTEvent.MOUSE_EVENT_MASK);
     }
 
@@ -45,6 +47,7 @@ class RoundedButton extends JButton {
      */
     public void setLabel(String label) {
         this.setText(label);
+        //setFont(getFont().deriveFont(Font.BOLD));
         invalidate();
         repaint();
     }
@@ -72,6 +75,7 @@ class RoundedButton extends JButton {
         if (f != null) {
             FontMetrics fm = getFontMetrics(getFont());
             g.setColor(getForeground());
+            g.setFont(getFont());
             g.drawString(this.getText(), getWidth() / 2 - fm.stringWidth(this.getText()) / 2, getHeight() / 2 + fm.getMaxDescent());
             //g.drawString(this.getText(), 5, 15);
         }

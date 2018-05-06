@@ -227,7 +227,7 @@ public class MancalaTest {
             int num = (i <= 6) ? i + 1 : i - 6;
             final String labelText = side + ((i == 6 || i == 13) ? "" : num);
             JLabel pitLabel = new JLabel(labelText);
-            if (i == 6 || i == 13) {pitLabel.setFont(new Font("Serif", Font.PLAIN, 30));}
+            if (i == 6 || i == 13) {pitLabel.setFont(new Font("Serif", Font.PLAIN, 48));}
 
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.weightx = .5;
@@ -358,7 +358,12 @@ public class MancalaTest {
 
         // For each pit, including mancala
         for (int i = 0; i < PIT_TOTAL_COUNT; i++){
-            PitButton pit = new PitButton(i+" ["+board.get(i).getNumbOfStones()+"]", selectedStrategy);
+            int stones = board.get(i).getNumbOfStones();
+            StringBuilder stoneLabel = new StringBuilder();
+            for (int stone = 1; stone < stones; stone++){
+                stoneLabel.append(". ");
+            }
+            PitButton pit = new PitButton(stoneLabel.toString(), selectedStrategy);
             final int selectedPit = i;
             pit.setEnabled(i < 6 ? t==0 : t==1);
             pit.addActionListener(new ActionListener(){
