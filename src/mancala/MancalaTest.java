@@ -216,48 +216,18 @@ public class MancalaTest {
 		
 		centerPanel.setLayout(new GridBagLayout());
 
-//		for (int i = 0; i < PIT_TOTAL_COUNT; i++){
-//		    //if (i == 6 || i == 13) {continue;}  // This line prevents mancala labels from being drawn
-//            //Create a button for the current pit ---------------------
-//            //Calculate label
-//            String side = (i <= 6) ? "A" : "B";
-//            int num = (i <= 6) ? i + 1 : i - 6;
-//            final String labelText = side + ((i == 6 || i == 13) ? "" : num);
-//            JLabel pitLabel = new JLabel(labelText);
-//            if (i == 6 || i == 13) {pitLabel.setFont(new Font("Serif", Font.PLAIN, 30));}
-//
-//            GridBagConstraints gbc = new GridBagConstraints();
-//            gbc.weightx = .5;
-//            gbc.weighty = .5;
-//            gbc.anchor = i < 6 ? GridBagConstraints.PAGE_START : GridBagConstraints.PAGE_END;
-//            gbc.gridy = i < 6 ? 3 : 0;
-//            gbc.gridx = pitToPoint(i).x;
-//
-//            centerPanel.add(pitLabel, gbc);
-//
-//        }
-
-        updateBoard();
-	
-		
-//		centerPanel.add(pitPanel2);
-//		centerPanel.add(pitPanel1);
-		
+        updateBoard();	
 		getScore();
 		
 		//left panel
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new GridLayout(0,1));
 
-        //leftPanel.add(player2Mancala);
-        //leftPanel.add(player2Score);
-
 
         //right panel
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new GridLayout(0,1));
-		//rightPanel.add(player1Mancala);
-        //rightPanel.add(player1Score);
+
 
         //top panel
         JPanel topPanel = new JPanel();
@@ -282,25 +252,8 @@ public class MancalaTest {
         gbc.insets = new Insets(0, 0, 0, 0);
         topPanel.add(whosTurn, gbc);
 
-//        gbc.gridx = 0;
-//        gbc.gridy = 1;
-//        gbc.anchor = GridBagConstraints.LAST_LINE_START;
-//        gbc.gridwidth = 150;
-//        gbc.insets = new Insets(0, 0, 0, 0);
-//        JLabel player2Mancala = new JLabel("Player 2's Pit");
-//        player2Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
-//        topPanel.add(player2Mancala, gbc);
-//
-//
-//        gbc.gridx = 2;
-//        gbc.gridy = 1;
-//        gbc.anchor = GridBagConstraints.LAST_LINE_END;
-//        gbc.insets = new Insets(0, 0, 0, 0);
-//        gbc.gridwidth = 150;
-//        JLabel player1Mancala = new JLabel("Player 1's Pit");
-//        player1Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
-//        topPanel.add(player1Mancala, gbc);
-
+       
+        //this will act as the view of the MVC.
         model.attach(new ChangeListener()
         {
             public void stateChanged(ChangeEvent e)
@@ -308,18 +261,15 @@ public class MancalaTest {
             	if(!model.gameOver()){
             		board= model.getBoard();
             		topPanel.remove(whosTurn);
-//            		leftPanel.remove(player2Score);
-//            		rightPanel.remove(player1Score);
+        
             		undoPanel.remove(undoCount);
                 	centerPanel.removeAll();
                 	pits.clear();
-//                	pitPanel1.removeAll();
-//                	pitPanel2.removeAll();
+
                 	updateBoard();
                 	getTurn();
                 	getScore();
-//                	centerPanel.add(pitPanel2);
-//                	centerPanel.add(pitPanel1);
+
 
                     GridBagConstraints gbc = new GridBagConstraints();
                     gbc.weightx = .5;
@@ -330,8 +280,6 @@ public class MancalaTest {
                     gbc.insets = new Insets(0, 0, 0, 0);
                 	topPanel.add(whosTurn, gbc);
 
-//                	leftPanel.add(player2Score);
-//            		rightPanel.add(player1Score);
             		undoPanel.add(undoCount);
                 	boardFrame.revalidate();
             	}else{

@@ -20,10 +20,17 @@ public class MancalaModel {
 	private int playersTurn;
 	private int lastStonePos = 0;
 
+	/**
+	 * constructs the model class
+	 */
 	public MancalaModel() {
 		listeners = new ArrayList<ChangeListener>();
 	}
 
+	/**
+	 * constructs the model class with stones
+	 * @param stone per pit 
+	 */
 	public MancalaModel(int stone) {
 		numOfStones = stone;
 		player1 = new Player("Player 1", 6);
@@ -37,6 +44,11 @@ public class MancalaModel {
 
 	}
 
+	
+	/**
+	 * this method will attach the change listeners to the model 
+	 * @param l the change listener to attach
+	 */
 	public void attach(ChangeListener l) {
 		listeners.add(l);
 	}
@@ -95,6 +107,10 @@ public class MancalaModel {
 
 	}
 
+	/**
+	 * this method will make a copy of the current board.. it will be used for undo function
+	 * @param b is the board that will be copied
+	 */
 	public void makeCopy(ArrayList<Pit> b) {
 		copyOfBoard = new ArrayList<Pit>();
 		for (int i = 0; i <= 13; i++) {
@@ -112,6 +128,11 @@ public class MancalaModel {
 		return board;
 	}
 
+	/**
+	 * this method implements the move function given the pit selected and the player
+	 * @param pitSelected is the pit that is selected
+	 * @param player is the player
+	 */
 	public void move(int pitSelected, Player player) {
 		makeCopy(board);
 
@@ -187,6 +208,9 @@ public class MancalaModel {
 
 	}
 
+	/**
+	 * will set free turn to true if the last position lands on 6 or 13
+	 */
 	public void freeTurn() {
 		if (lastStonePos == 6 && getsWhoTurn() == 0) {
 			freeTurn = true;
@@ -197,10 +221,18 @@ public class MancalaModel {
 		}
 	}
 
+	/**
+	 * return free turn variable
+	 * @return true if player gets free turn
+	 */
 	public boolean getFreeTurn() {
 		return freeTurn;
 	}
 
+	/**
+	 * this method will implement undo function if undo button is pressed.
+	 * @param p is the player who undo their turn
+	 */
 	public void undo(Player p) {
 		if (p.numOfUndos < 3 && copyOfBoard != null) {
 			p.numOfUndos++;
@@ -219,6 +251,9 @@ public class MancalaModel {
 		}
 	}
 
+	/**
+	 * this method will reset free turn to false
+	 */
 	public void resetFreeTurnStatus() {
 		freeTurn = false;
 	}
@@ -236,20 +271,35 @@ public class MancalaModel {
 		System.out.println(print);
 	}
 
+	/**
+	 * this method will get who turns it is.
+	 * @return
+	 */
 	public int getsWhoTurn() {
 		return (turnCount % 2);
 		// 0 for player 1
 		// 1 for player 2
 	}
 
+	/**
+	 * this method will get the total number of turn count
+	 * @return
+	 */
 	public int getTurnCount() {
 		return turnCount;
 	}
 
+	/**
+	 * this method add the number of turn counts
+	 */
 	public void addTurnCount() {
 		turnCount++;
 	}
 
+	/**
+	 * this method will return the player depending on the turn count
+	 * @return the player
+	 */
 	public Player getsPlayerTurn() {
 		if (getsWhoTurn() == 0) {
 			return player1;
@@ -257,6 +307,10 @@ public class MancalaModel {
 		return player2;
 	}
 
+	/**
+	 * this method will return the other players.
+	 * @return
+	 */
 	public Player getOtherPlayers() {
 		if (getsWhoTurn() == 1) {
 			return player1;
@@ -300,6 +354,10 @@ public class MancalaModel {
 		return numOfStonesInRow;
 	}
 
+	/**
+	 * this game will determine if game is over
+	 * @return
+	 */
 	public boolean gameOver() {
 		if (getStonesInPlayer1Row() == 0 || getStonesInPlayer2Row() == 0) {
 			board.get(6).addMoreStones(getStonesInPlayer1Row());
@@ -311,6 +369,10 @@ public class MancalaModel {
 	}
 	
 
+	/**
+	 * this method will determine who is the winner.
+	 * @return
+	 */
 	public Player getWinner() {
 		if (board.get(6).getNumbOfStones() > board.get(13).getNumbOfStones()) {
 			return player1;

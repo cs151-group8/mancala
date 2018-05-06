@@ -58,10 +58,18 @@ public class Player {
         numOfUndos++;
     }
 
+    /**
+     * get number of undos from player
+     * @return
+     */
     public int getnumOfUndos() {
         return numOfUndos;
     }
     
+    /**
+     * set the number of undos a player has
+     * @param n
+     */
     public void setnumOfUndos(int n){
     	numOfUndos = n;
     }
