@@ -373,7 +373,7 @@ public class MancalaTest {
             int num = (i <= 6) ? i + 1 : i - 6;
             final String labelText = side + ((i == 6 || i == 13) ? "" : num);
             JLabel pitLabel = new JLabel(labelText);
-            if (i == 6 || i == 13) {pitLabel.setFont(new Font("Serif", Font.PLAIN, 30));}
+            if (i == 6 || i == 13) {pitLabel.setFont(new Font("Serif", Font.PLAIN, 26));}
 
             gbc = new GridBagConstraints();
             gbc.weightx = .5;
