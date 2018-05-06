@@ -304,6 +304,15 @@ public class MancalaTest {
 		
 	}
 
+	/**
+	 * Generates new pits and their labels for the UI,
+	 * inserts them into the center panel's gridbaglayout,
+	 * and enables/disables pits such that only valid choices are clickable.
+	 *
+	 * Note: RoundedButton was modified to support this.  The implementation we chose
+	 * causes stones to be redrawn on mouseover ONLY for valid choices, as a hint
+	 * to help the user.
+	 */
 	public static void updateBoard(){
 		int t = model.getsWhoTurn();
 
@@ -314,7 +323,6 @@ public class MancalaTest {
             // ------------------------------------
             // Labels
             // ------------------------------------
-            //if (i == 6 || i == 13) {continue;}  // This line prevents mancala labels from being drawn
             //Create a button for the current pit ---------------------
             //Calculate label
             String side = (i <= 6) ? "A" : "B";
@@ -408,6 +416,7 @@ public class MancalaTest {
     private static final int PITS_PER_ROW = 6;  //pits in a row, NOT counting mancala
     private static final int PIT_ROWS = 2;         //some variants have more than 2 rows, but only 2 rows supported at this time
     private static final int PIT_TOTAL_COUNT = PITS_PER_ROW * PIT_ROWS + 2;
+    
     /**
      * Determines the pit's position in the game board grid (# 6 and 13 are double height, taking up 2 rows)
      *         0    1    2    3    4    5    6    7 <-- gridx
@@ -427,47 +436,74 @@ public class MancalaTest {
     }
 }
 
+/**
+ * Clickable 2d "pit" which is essentially a round-cornered button with
+ * stones represented as randomly colored randomly placed gray circles.
+ */
 class PitButton extends RoundedButton {
     int stones;
 
-    public PitButton(String text, StyleStrategy initialStrategy){
+	/**
+	 * Creates a new Pit with 0 stones
+	 * @param text label for pit (useable for pit label and/or # of stones)
+	 * @param initialStrategy StyleStrategy object for assigning pit colors
+	 */
+	public PitButton(String text, StyleStrategy initialStrategy){
         this.setStyleStrategy(initialStrategy);
         this.setText(text);
         stones = 0;
     }
 
-    public PitButton(String text){
-        this.setText(text);
-        stones = 0;
-    }
-
-    public PitButton(StyleStrategy initialStrategy){
-        this.setStyleStrategy(initialStrategy);
-        stones = 0;
-    }
-
-    public void setStyleStrategy(StyleStrategy strategy){
+	/**
+	 * Changes style strategy of this pitbutton
+	 * @param strategy
+	 */
+	public void setStyleStrategy(StyleStrategy strategy){
         this.setBackground(strategy.getPitColor());
         this.setForeground(strategy.getPitTextColor());
     }
 
-    public int addStones(int stones){
+	/**
+	 * Add stones to this pit
+	 * @param stones number of stones to add
+	 * @return Number of stones in pit after removal
+	 */
+	public int addStones(int stones){
         return this.stones += stones;
     }
 
-    public int removeStones(int stones){
+	/**
+	 * Removes stones from pit
+	 * @param stones number of stones to remove
+	 * @return Number of stones in put after removal
+	 */
+	public int removeStones(int stones){
         return this.stones += stones;
     }
 
-    public int setStones(int stones){
+	/**
+	 * Sets number of stones in pit to a specific count
+	 * @param stones Number of stones in pit
+	 * @return Number of stones in pit (same as input)
+	 */
+	public int setStones(int stones){
         return this.stones = stones;
     }
 
-    public int removeAllStones(){
+	/**
+	 * Sets number of stones in pit to 0
+	 * @return Number of stones in pit (0)
+	 */
+	public int removeAllStones(){
         return stones = 0;
     }
 
-    @Override
+	/**
+	 * Enhances RoundedButton's paint function by also painting stones.
+	 * Stones are drawn in random locations within the pit's borders.
+	 * Stone colors are also randomly selected from a set of 3 colors
+	 */
+	@Override
     public void paint(Graphics g) {
         super.paint(g);
         for (int i = 1; i <= stones; i++){
@@ -488,6 +524,10 @@ class PitButton extends RoundedButton {
     }
 }
 
+/**
+ * Provides an implementable strategy pattern for defining/selecting
+ * "styles" as sets of colors.
+ */
 interface StyleStrategy{
     //Color getBackgroundColor();
     //Color getTextColor();
@@ -495,6 +535,9 @@ interface StyleStrategy{
     Color getPitTextColor();
 }
 
+/**
+ * A light gray StyleStrategy with black text
+ */
 class LightStyleStrategy implements StyleStrategy{
 
 //        @Override
@@ -518,6 +561,9 @@ class LightStyleStrategy implements StyleStrategy{
     }
 }
 
+/**
+ * A dark gray strategy with light gray text
+ */
 class DarkStyleStrategy implements StyleStrategy{
 
     @Override
