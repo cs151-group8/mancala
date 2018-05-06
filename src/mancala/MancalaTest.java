@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -387,6 +388,7 @@ public class MancalaTest {
             // ------------------------------------
             int stones = board.get(i).getNumbOfStones();
             PitButton pit = new PitButton(String.valueOf(stones), selectedStrategy);
+            pit.setStones(stones);
             final int selectedPit = i;
             pit.setEnabled(i < 6 ? t==0 : t==1);
             pit.addActionListener(new ActionListener(){
@@ -478,22 +480,63 @@ public class MancalaTest {
 }
 
 class PitButton extends RoundedButton {
+    int stones;
+
     public PitButton(String text, StyleStrategy initialStrategy){
         this.setStyleStrategy(initialStrategy);
         this.setText(text);
+        stones = 0;
     }
 
     public PitButton(String text){
         this.setText(text);
+        stones = 0;
     }
 
     public PitButton(StyleStrategy initialStrategy){
         this.setStyleStrategy(initialStrategy);
+        stones = 0;
     }
 
     public void setStyleStrategy(StyleStrategy strategy){
         this.setBackground(strategy.getPitColor());
         this.setForeground(strategy.getPitTextColor());
+    }
+
+    public int addStones(int stones){
+        return this.stones += stones;
+    }
+
+    public int removeStones(int stones){
+        return this.stones += stones;
+    }
+
+    public int setStones(int stones){
+        return this.stones = stones;
+    }
+
+    public int removeAllStones(){
+        return stones = 0;
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        for (int i = 1; i <= stones; i++){
+            int stoneDiameter = (int)(.2 * this.getWidth());
+            Random r = new Random();
+            int x = r.nextInt(this.getWidth() - stoneDiameter);
+            int y = r.nextInt(this.getHeight() - stoneDiameter);
+
+            switch (r.nextInt(3) % 3) {
+                case 0:  g.setColor(Color.GRAY);        break;
+                case 1:  g.setColor(Color.DARK_GRAY);   break;
+                case 2:  g.setColor(Color.LIGHT_GRAY);  break;
+            }
+            g.fillOval(x, y, stoneDiameter, stoneDiameter);
+            g.setColor(Color.BLACK);
+            g.drawOval(x, y, stoneDiameter, stoneDiameter);
+        }
     }
 }
 
