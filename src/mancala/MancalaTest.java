@@ -114,11 +114,7 @@ public class MancalaTest {
 				}
 			}
 		});
-		
-		
-		
-		
-		
+
 		JPanel PickLayoutPanel = new JPanel();
 		PickLayoutPanel.setPreferredSize(new Dimension(10, 20));
 		JLabel layoutLabel = new JLabel ("Choose a Theme:");
@@ -219,26 +215,26 @@ public class MancalaTest {
 		
 		centerPanel.setLayout(new GridBagLayout());
 
-		for (int i = 0; i < PIT_TOTAL_COUNT; i++){
-		    //if (i == 6 || i == 13) {continue;}  // This line prevents mancala labels from being drawn
-            //Create a button for the current pit ---------------------
-            //Calculate label
-            String side = (i <= 6) ? "A" : "B";
-            int num = (i <= 6) ? i + 1 : i - 6;
-            final String labelText = side + ((i == 6 || i == 13) ? "" : num);
-            JLabel pitLabel = new JLabel(labelText);
-            if (i == 6 || i == 13) {pitLabel.setFont(new Font("Serif", Font.PLAIN, 30));}
-
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.weightx = .5;
-            gbc.weighty = .5;
-            gbc.anchor = i < 6 ? GridBagConstraints.PAGE_START : GridBagConstraints.PAGE_END;
-            gbc.gridy = i < 6 ? 3 : 0;
-            gbc.gridx = pitToPoint(i).x;
-
-            centerPanel.add(pitLabel, gbc);
-
-        }
+//		for (int i = 0; i < PIT_TOTAL_COUNT; i++){
+//		    //if (i == 6 || i == 13) {continue;}  // This line prevents mancala labels from being drawn
+//            //Create a button for the current pit ---------------------
+//            //Calculate label
+//            String side = (i <= 6) ? "A" : "B";
+//            int num = (i <= 6) ? i + 1 : i - 6;
+//            final String labelText = side + ((i == 6 || i == 13) ? "" : num);
+//            JLabel pitLabel = new JLabel(labelText);
+//            if (i == 6 || i == 13) {pitLabel.setFont(new Font("Serif", Font.PLAIN, 30));}
+//
+//            GridBagConstraints gbc = new GridBagConstraints();
+//            gbc.weightx = .5;
+//            gbc.weighty = .5;
+//            gbc.anchor = i < 6 ? GridBagConstraints.PAGE_START : GridBagConstraints.PAGE_END;
+//            gbc.gridy = i < 6 ? 3 : 0;
+//            gbc.gridx = pitToPoint(i).x;
+//
+//            centerPanel.add(pitLabel, gbc);
+//
+//        }
 
         updateBoard();
 	
@@ -276,6 +272,9 @@ public class MancalaTest {
         gbc.insets = new Insets(5, 0, 5, 0); // add blank space around title
         topPanel.add(gameTitle, gbc);
 
+        gbc = new GridBagConstraints();
+        gbc.weightx = .5;
+        gbc.weighty = .5;
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -320,7 +319,16 @@ public class MancalaTest {
                 	getScore();
 //                	centerPanel.add(pitPanel2);
 //                	centerPanel.add(pitPanel1);
-                	topPanel.add(whosTurn);
+
+                    GridBagConstraints gbc = new GridBagConstraints();
+                    gbc.weightx = .5;
+                    gbc.weighty = .5;
+                    gbc.gridx = 0;
+                    gbc.gridy = 1;
+                    gbc.anchor = GridBagConstraints.CENTER;
+                    gbc.insets = new Insets(0, 0, 0, 0);
+                	topPanel.add(whosTurn, gbc);
+
 //                	leftPanel.add(player2Score);
 //            		rightPanel.add(player1Score);
             		undoPanel.add(undoCount);
@@ -350,14 +358,33 @@ public class MancalaTest {
 	public static void updateBoard(){
 		int t = model.getsWhoTurn();
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = .5;
-        gbc.weighty = .5;
-        gbc.insets = new Insets(5, 5, 5, 5); // add blank space under title
+        GridBagConstraints gbc;
 
         // For each pit, including mancala
         for (int i = 0; i < PIT_TOTAL_COUNT; i++){
+            // ------------------------------------
+            // Labels
+            // ------------------------------------
+            //if (i == 6 || i == 13) {continue;}  // This line prevents mancala labels from being drawn
+            //Create a button for the current pit ---------------------
+            //Calculate label
+            String side = (i <= 6) ? "A" : "B";
+            int num = (i <= 6) ? i + 1 : i - 6;
+            final String labelText = side + ((i == 6 || i == 13) ? "" : num);
+            JLabel pitLabel = new JLabel(labelText);
+            if (i == 6 || i == 13) {pitLabel.setFont(new Font("Serif", Font.PLAIN, 30));}
+
+            gbc = new GridBagConstraints();
+            gbc.weightx = .5;
+            gbc.weighty = .5;
+            gbc.anchor = i < 6 ? GridBagConstraints.PAGE_START : GridBagConstraints.PAGE_END;
+            gbc.gridy = i < 6 ? 3 : 0;
+            gbc.gridx = pitToPoint(i).x;
+            centerPanel.add(pitLabel, gbc);
+
+            // ------------------------------------
+            // Buttons
+            // ------------------------------------
             PitButton pit = new PitButton(i+" ["+board.get(i).getNumbOfStones()+"]", selectedStrategy);
             final int selectedPit = i;
             pit.setEnabled(i < 6 ? t==0 : t==1);
@@ -365,25 +392,22 @@ public class MancalaTest {
                 public void actionPerformed(ActionEvent e){
                     Player p = model.getsPlayerTurn();
                     model.move(selectedPit, p);
-
                 }
-
             });
-
+            gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.BOTH;
+            gbc.weightx = .5;
+            gbc.weighty = .5;
+            gbc.insets = new Insets(5, 5, 5, 5);
             gbc.gridy = pitToPoint(i).y + 1;
             gbc.gridx = pitToPoint(i).x;
             gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
 
             if (i == 6 || i == 13){
-                //Comment this out to disable Rusty's mancala
                 pit.setEnabled(false);  //Override above calculation and disable if mancala
-                pits.add(pit);
-                centerPanel.add(pit, gbc);  //Add pit panel to game board grid panel
             }
-            else{
-                pits.add(pit);
-                centerPanel.add(pit, gbc);  //Add pit panel to game board grid panel
-            }
+            pits.add(pit);
+            centerPanel.add(pit, gbc);  //Add pit panel to game board grid panel
         }
 		
 	}
