@@ -220,21 +220,23 @@ public class MancalaTest {
 		centerPanel.setLayout(new GridBagLayout());
 
 		for (int i = 0; i < PIT_TOTAL_COUNT; i++){
-		    if (i == 6 || i == 13) {continue;}
+		    //if (i == 6 || i == 13) {continue;}  // This line prevents mancala labels from being drawn
             //Create a button for the current pit ---------------------
             //Calculate label
             String side = (i <= 6) ? "A" : "B";
             int num = (i <= 6) ? i + 1 : i - 6;
-            final String pitLabel = side + ((i == 6 || i == 13) ? "" : num);
+            final String labelText = side + ((i == 6 || i == 13) ? "" : num);
+            JLabel pitLabel = new JLabel(labelText);
+            if (i == 6 || i == 13) {pitLabel.setFont(new Font("Serif", Font.PLAIN, 30));}
 
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.weightx = .5;
             gbc.weighty = .5;
-
-            gbc.gridy = side.equalsIgnoreCase("A") ? 3 : 0;
+            gbc.anchor = i < 6 ? GridBagConstraints.PAGE_START : GridBagConstraints.PAGE_END;
+            gbc.gridy = i < 6 ? 3 : 0;
             gbc.gridx = pitToPoint(i).x;
 
-            centerPanel.add(new JLabel(pitLabel), gbc);
+            centerPanel.add(pitLabel, gbc);
 
         }
 
