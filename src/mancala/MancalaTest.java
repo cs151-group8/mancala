@@ -219,6 +219,25 @@ public class MancalaTest {
 		
 		centerPanel.setLayout(new GridBagLayout());
 
+		for (int i = 0; i < PIT_TOTAL_COUNT; i++){
+		    if (i == 6 || i == 13) {continue;}
+            //Create a button for the current pit ---------------------
+            //Calculate label
+            String side = (i <= 6) ? "A" : "B";
+            int num = (i <= 6) ? i + 1 : i - 6;
+            final String pitLabel = side + ((i == 6 || i == 13) ? "" : num);
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.weightx = .5;
+            gbc.weighty = .5;
+
+            gbc.gridy = side.equalsIgnoreCase("A") ? 3 : 0;
+            gbc.gridx = pitToPoint(i).x;
+
+            centerPanel.add(new JLabel(pitLabel), gbc);
+
+        }
+
         updateBoard();
 	
 		
@@ -348,9 +367,9 @@ public class MancalaTest {
 
             });
 
-            gbc.gridy = pitToPoint(i).y;
+            gbc.gridy = (i == 6 || i == 13) ? 0 : pitToPoint(i).y + 1;
             gbc.gridx = pitToPoint(i).x;
-            gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
+            gbc.gridheight = (i == 6 || i == 13) ? 4 : 1; // Mancala are extra high
 
             //todo: Either use Rusty's mancala or original mancala
             if (i == 6 || i == 13){
