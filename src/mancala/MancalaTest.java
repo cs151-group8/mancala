@@ -271,32 +271,33 @@ public class MancalaTest {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(5, 0, 10, 0); // add blank space under title
+        gbc.insets = new Insets(5, 0, 5, 0); // add blank space around title
         topPanel.add(gameTitle, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.insets = new Insets(0, 0, 0, 0);
-        topPanel.add(whosTurn, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.LAST_LINE_START;
-        gbc.gridwidth = 150;
+        gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(0, 0, 0, 0);
-        JLabel player2Mancala = new JLabel("Player 2's Pit");
-        player2Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
-        topPanel.add(player2Mancala, gbc);
+        topPanel.add(whosTurn, gbc);
 
-
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.LAST_LINE_END;
-        gbc.insets = new Insets(0, 0, 0, 0);
-        gbc.gridwidth = 150;
-        JLabel player1Mancala = new JLabel("Player 1's Pit");
-        player1Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
-        topPanel.add(player1Mancala, gbc);
+//        gbc.gridx = 0;
+//        gbc.gridy = 1;
+//        gbc.anchor = GridBagConstraints.LAST_LINE_START;
+//        gbc.gridwidth = 150;
+//        gbc.insets = new Insets(0, 0, 0, 0);
+//        JLabel player2Mancala = new JLabel("Player 2's Pit");
+//        player2Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
+//        topPanel.add(player2Mancala, gbc);
+//
+//
+//        gbc.gridx = 2;
+//        gbc.gridy = 1;
+//        gbc.anchor = GridBagConstraints.LAST_LINE_END;
+//        gbc.insets = new Insets(0, 0, 0, 0);
+//        gbc.gridwidth = 150;
+//        JLabel player1Mancala = new JLabel("Player 1's Pit");
+//        player1Mancala.setFont(new Font("Serif", Font.PLAIN, 20));
+//        topPanel.add(player1Mancala, gbc);
 
         model.attach(new ChangeListener()
         {
@@ -371,7 +372,6 @@ public class MancalaTest {
             gbc.gridx = pitToPoint(i).x;
             gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
 
-            //todo: Either use Rusty's mancala or original mancala
             if (i == 6 || i == 13){
                 //Comment this out to disable Rusty's mancala
                 pit.setEnabled(false);  //Override above calculation and disable if mancala
