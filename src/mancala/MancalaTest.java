@@ -385,7 +385,8 @@ public class MancalaTest {
             // ------------------------------------
             // Buttons
             // ------------------------------------
-            PitButton pit = new PitButton(i+" ["+board.get(i).getNumbOfStones()+"]", selectedStrategy);
+            int stones = board.get(i).getNumbOfStones();
+            PitButton pit = new PitButton(String.valueOf(stones), selectedStrategy);
             final int selectedPit = i;
             pit.setEnabled(i < 6 ? t==0 : t==1);
             pit.addActionListener(new ActionListener(){
@@ -404,7 +405,7 @@ public class MancalaTest {
             gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
 
             if (i == 6 || i == 13){
-                pit.setEnabled(false);  //Override above calculation and disable if mancala
+                pit.setEnabled(stones > 0);  //Override above calculation and disable if mancala
             }
             pits.add(pit);
             centerPanel.add(pit, gbc);  //Add pit panel to game board grid panel

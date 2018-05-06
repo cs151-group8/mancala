@@ -72,6 +72,7 @@ class RoundedButton extends JButton {
         if (f != null) {
             FontMetrics fm = getFontMetrics(getFont());
             g.setColor(getForeground());
+            g.setFont(getFont().deriveFont(Font.BOLD));
             g.drawString(this.getText(), getWidth() / 2 - fm.stringWidth(this.getText()) / 2, getHeight() / 2 + fm.getMaxDescent());
             //g.drawString(this.getText(), 5, 15);
         }
