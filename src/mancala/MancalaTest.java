@@ -367,9 +367,9 @@ public class MancalaTest {
 
             });
 
-            gbc.gridy = (i == 6 || i == 13) ? 0 : pitToPoint(i).y + 1;
+            gbc.gridy = pitToPoint(i).y + 1;
             gbc.gridx = pitToPoint(i).x;
-            gbc.gridheight = (i == 6 || i == 13) ? 4 : 1; // Mancala are extra high
+            gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
 
             //todo: Either use Rusty's mancala or original mancala
             if (i == 6 || i == 13){
