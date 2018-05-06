@@ -405,7 +405,10 @@ public class MancalaTest {
             gbc.gridheight = (i == 6 || i == 13) ? 2 : 1; // Mancala are extra high
 
             if (i == 6 || i == 13){
-                pit.setEnabled(stones > 0);  //Override above calculation and disable if mancala
+                pit.setEnabled(false);  //Override above calculation and disable if mancala
+            }
+            else if (stones <= 0){
+                pit.setEnabled(false);
             }
             pits.add(pit);
             centerPanel.add(pit, gbc);  //Add pit panel to game board grid panel
